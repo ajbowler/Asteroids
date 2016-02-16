@@ -11,8 +11,8 @@ namespace Asteroids
         GraphicsDevice device;
         SpriteBatch spriteBatch;
         BasicEffect effect;
-        Matrix viewMatrix, projectionMatrix;
 
+        Camera camera;
         Spaceship spaceship;
 
         public Game1()
@@ -39,30 +39,15 @@ namespace Asteroids
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             device = graphics.GraphicsDevice;
-            LoadCamera();
+            camera = new Camera(device);
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
         }
 
-        private void LoadCamera()
-        {
-            viewMatrix = Matrix.CreateLookAt(
-                new Vector3(0, 20, 50),
-                new Vector3(0, 0, 0),
-                new Vector3(0, 1, 0)
-            );
-
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.PiOver4,
-                device.Viewport.AspectRatio,
-                1.0f,
-                1000.0f
-            );
-        }
-
         protected override void UnloadContent()
         {
-
+            camera = null;
+            spaceship = null;
         }
 
         private void ProcessKeyboard(GameTime gameTime)
@@ -93,29 +78,16 @@ namespace Asteroids
 
             ProcessKeyboard(gameTime);
             spaceship.Update(gameTime);
-            UpdateCamera();
+            camera.Update(spaceship);
             base.Update(gameTime);
-        }
-
-        private void UpdateCamera()
-        {
-            Vector3 newPosition = new Vector3(0, 10.0f, 40.0f);
-            newPosition = Vector3.Transform(newPosition, Matrix.CreateFromQuaternion(spaceship.getRotation()));
-            newPosition += spaceship.getPosition();
-
-            Vector3 newUp = new Vector3(0, 1, 0);
-            newUp = Vector3.Transform(newUp, Matrix.CreateFromQuaternion(spaceship.getRotation()));
-
-            viewMatrix = Matrix.CreateLookAt(newPosition, spaceship.getPosition(), newUp);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 1000.0f);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            effect.Projection = projectionMatrix;
-            effect.View = viewMatrix;
-            spaceship.Draw(spriteBatch, viewMatrix, projectionMatrix);
+            effect.Projection = camera.getProjection();
+            effect.View = camera.getView();
+            spaceship.Draw(spriteBatch, camera.getView(), camera.getProjection());
 
             base.Draw(gameTime);
         }
