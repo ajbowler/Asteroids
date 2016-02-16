@@ -11,9 +11,9 @@ namespace Asteroids
         GraphicsDevice device;
         SpriteBatch spriteBatch;
         BasicEffect effect;
-
         Matrix viewMatrix, projectionMatrix;
-        Model spaceshipModel;
+
+        Spaceship spaceship;
 
         public Game1()
         {
@@ -40,20 +40,8 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
             device = graphics.GraphicsDevice;
             LoadCamera();
-            spaceshipModel = LoadSpaceShipModel();
-        }
-
-        private Model LoadSpaceShipModel()
-        {
-            Model model = Content.Load<Model>("Models/star-wars-vader-tie-fighter");
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
-                    meshPart.Effect = effect.Clone();
-                }
-            }
-            return model;
+            spaceship = new Spaceship();
+            spaceship.LoadModel(this.Content, effect);
         }
 
         private void LoadCamera()
@@ -77,48 +65,59 @@ namespace Asteroids
 
         }
 
+        private void ProcessKeyboard(GameTime gameTime)
+        {
+            float leftRightRot = 0;
+
+            float turningSpeed = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
+            turningSpeed *= 1.6f;
+            KeyboardState keys = Keyboard.GetState();
+            if (keys.IsKeyDown(Keys.Right))
+                leftRightRot += turningSpeed;
+            if (keys.IsKeyDown(Keys.Left))
+                leftRightRot -= turningSpeed;
+            float upDownRot = 0;
+            if (keys.IsKeyDown(Keys.Down))
+                upDownRot += turningSpeed;
+            if (keys.IsKeyDown(Keys.Up))
+                upDownRot -= turningSpeed;
+            Quaternion additionalRot = Quaternion.CreateFromAxisAngle(new Vector3(0, 0, -1), leftRightRot) * 
+                Quaternion.CreateFromAxisAngle(new Vector3(1, 0, 0), upDownRot);
+            spaceship.setRotation(spaceship.getRotation() * additionalRot);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
+            ProcessKeyboard(gameTime);
+            spaceship.Update(gameTime);
+            UpdateCamera();
             base.Update(gameTime);
         }
 
+        private void UpdateCamera()
+        {
+            Vector3 newPosition = new Vector3(0, 10.0f, 40.0f);
+            newPosition = Vector3.Transform(newPosition, Matrix.CreateFromQuaternion(spaceship.getRotation()));
+            newPosition += spaceship.getPosition();
+
+            Vector3 newUp = new Vector3(0, 1, 0);
+            newUp = Vector3.Transform(newUp, Matrix.CreateFromQuaternion(spaceship.getRotation()));
+
+            viewMatrix = Matrix.CreateLookAt(newPosition, spaceship.getPosition(), newUp);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 1000.0f);
+        }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             effect.Projection = projectionMatrix;
             effect.View = viewMatrix;
-            DrawSpaceshipModel();
+            spaceship.Draw(spriteBatch, viewMatrix, projectionMatrix);
 
             base.Draw(gameTime);
-        }
-
-        private void DrawSpaceshipModel()
-        {
-            Matrix world = Matrix.CreateScale(0.05f) * 
-                Matrix.CreateRotationY(MathHelper.Pi) * 
-                Matrix.CreateTranslation(new Vector3(0, 0, 0));
-
-            Matrix[] spaceshipTransformation = new Matrix[spaceshipModel.Bones.Count];
-            spaceshipModel.CopyAbsoluteBoneTransformsTo(spaceshipTransformation);
-            foreach (ModelMesh mesh in spaceshipModel.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.World = world;
-                    effect.View = viewMatrix;
-                    effect.Projection = projectionMatrix;
-                    effect.EnableDefaultLighting();
-                    effect.DirectionalLight0.DiffuseColor = new Vector3(0.0f, 0.0f, 0.0f);
-                    effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);
-                    effect.DirectionalLight0.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
-                }
-                mesh.Draw();
-            }
         }
     }
 }
