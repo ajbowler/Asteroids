@@ -13,16 +13,20 @@ namespace Asteroids
 
         private Vector3 position;
         private Quaternion rotation;
+        private Vector3 acceleration;
+        private Vector3 velocity;
         private Matrix world;
         private Model model;
         private Texture2D texture;
 
         public Spaceship()
         {
-            position = new Vector3();
-            rotation = Quaternion.Identity;
-            model = null;
+            this.position = new Vector3();
+            this.rotation = Quaternion.Identity;
+            this.model = null;
             this.texture = null;
+            this.velocity = new Vector3(0, 0, 0);
+            this.acceleration = new Vector3(0, 0, 0);
             Matrix world = Matrix.Identity;
         }
 
@@ -76,7 +80,7 @@ namespace Asteroids
 
         public void MoveForward(float speed)
         {
-            Vector3 addVector = Vector3.Transform(new Vector3(0, 0, -1), getRotation());
+            Vector3 addVector = Vector3.Transform(getVelocity(), getRotation());
             setPosition(this.position + (addVector * speed));
         }
 
@@ -108,6 +112,26 @@ namespace Asteroids
         public void setWorldMatrix(Matrix world)
         {
             this.world = world;
+        }
+
+        public Vector3 getVelocity()
+        {
+            return this.velocity;
+        }
+
+        public void setVelocity(Vector3 velocity)
+        {
+            this.velocity = velocity;
+        }
+
+        public Vector3 getAcceleration()
+        {
+            return this.acceleration;
+        }
+
+        public void setAcceleration(Vector3 acceleration)
+        {
+            this.acceleration = acceleration;
         }
     }
 }
