@@ -8,18 +8,21 @@ namespace Asteroids
 {
     class Spaceship
     {
-        public const string MODEL_PATH = "Models/star-wars-vader-tie-fighter";
+        public const string MODEL_PATH = "Models/spaceship";
+        public const string TEXTURE_PATH = "Models/metal";
 
-        Vector3 position;
-        Quaternion rotation;
-        Matrix world;
-        Model model;
+        private Vector3 position;
+        private Quaternion rotation;
+        private Matrix world;
+        private Model model;
+        private Texture2D texture;
 
         public Spaceship()
         {
             position = new Vector3();
             rotation = Quaternion.Identity;
             model = null;
+            this.texture = null;
             Matrix world = Matrix.Identity;
         }
 
@@ -28,6 +31,11 @@ namespace Asteroids
             this.model = content.Load<Model>(MODEL_PATH);
             foreach (ModelMesh mesh in model.Meshes)
             {
+                foreach (BasicEffect currentEffect in mesh.Effects)
+                {
+                    this.texture = currentEffect.Texture;
+                }
+
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
                     meshPart.Effect = effect.Clone();
@@ -41,12 +49,13 @@ namespace Asteroids
             MoveForward(moveSpeed);
         }
 
-        public void Draw(Matrix view, Matrix projection)
+        public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            setWorldMatrix(Matrix.CreateScale(0.01f) *
-                Matrix.CreateRotationY(MathHelper.Pi) *
+            setWorldMatrix(Matrix.CreateRotationX(MathHelper.Pi * 3 / 2) *
                 Matrix.CreateFromQuaternion(getRotation()) *
                 Matrix.CreateTranslation(getPosition()));
+
+            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
 
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
             this.model.CopyAbsoluteBoneTransformsTo(transformation);
@@ -58,9 +67,8 @@ namespace Asteroids
                     effect.View = view;
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
-                    effect.DirectionalLight0.DiffuseColor = new Vector3(0.0f, 0.0f, 0.0f);
-                    effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);
-                    effect.DirectionalLight0.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
+                    effect.TextureEnabled = true;
+                    effect.Texture = this.texture;
                 }
                 mesh.Draw();
             }

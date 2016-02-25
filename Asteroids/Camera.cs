@@ -19,7 +19,7 @@ namespace Asteroids
             this.device = device;
 
             this.view = Matrix.CreateLookAt(
-                new Vector3(0, 5, 20),
+                new Vector3(0, 15f, 40f),
                 new Vector3(0, 0, 0),
                 new Vector3(0, 1, 0)
             );
@@ -34,7 +34,7 @@ namespace Asteroids
 
         public void Update(Spaceship spaceship)
         {
-            Vector3 newPosition = new Vector3(0, 5f, 20f);
+            Vector3 newPosition = new Vector3(0f, 15f, 40f);
             newPosition = Vector3.Transform(
                 newPosition, 
                 Matrix.CreateFromQuaternion(spaceship.getRotation())

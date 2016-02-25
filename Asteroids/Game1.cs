@@ -83,7 +83,6 @@ namespace Asteroids
             ProcessKeyboard(gameTime);
             spaceship.Update(gameTime);
             camera.Update(spaceship);
-            skybox.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -93,7 +92,7 @@ namespace Asteroids
             effect.Projection = camera.getProjection();
             effect.View = camera.getView();
             skybox.Draw(device, camera.getView(), camera.getProjection());
-            spaceship.Draw(camera.getView(), camera.getProjection());
+            spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
     }
