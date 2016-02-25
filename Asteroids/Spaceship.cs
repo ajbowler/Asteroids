@@ -41,9 +41,9 @@ namespace Asteroids
             MoveForward(moveSpeed);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection)
         {
-            setWorldMatrix(Matrix.CreateScale(0.05f) *
+            setWorldMatrix(Matrix.CreateScale(0.01f) *
                 Matrix.CreateRotationY(MathHelper.Pi) *
                 Matrix.CreateFromQuaternion(getRotation()) *
                 Matrix.CreateTranslation(getPosition()));

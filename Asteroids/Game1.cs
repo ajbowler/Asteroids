@@ -13,6 +13,7 @@ namespace Asteroids
         BasicEffect effect;
 
         Camera camera;
+        Skybox skybox;
         Spaceship spaceship;
 
         public Game1()
@@ -40,6 +41,8 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
             device = graphics.GraphicsDevice;
             camera = new Camera(device);
+            skybox = new Skybox();
+            skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
         }
@@ -48,6 +51,7 @@ namespace Asteroids
         {
             camera = null;
             spaceship = null;
+            skybox = null;
         }
 
         private void ProcessKeyboard(GameTime gameTime)
@@ -57,14 +61,14 @@ namespace Asteroids
             float turningSpeed = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
             turningSpeed *= 1.6f;
             KeyboardState keys = Keyboard.GetState();
-            if (keys.IsKeyDown(Keys.Right))
+            if (keys.IsKeyDown(Keys.D))
                 leftRightRot += turningSpeed;
-            if (keys.IsKeyDown(Keys.Left))
+            if (keys.IsKeyDown(Keys.A))
                 leftRightRot -= turningSpeed;
             float upDownRot = 0;
-            if (keys.IsKeyDown(Keys.Down))
+            if (keys.IsKeyDown(Keys.S))
                 upDownRot += turningSpeed;
-            if (keys.IsKeyDown(Keys.Up))
+            if (keys.IsKeyDown(Keys.W))
                 upDownRot -= turningSpeed;
             Quaternion additionalRot = Quaternion.CreateFromAxisAngle(new Vector3(0, 0, -1), leftRightRot) * 
                 Quaternion.CreateFromAxisAngle(new Vector3(1, 0, 0), upDownRot);
@@ -79,6 +83,7 @@ namespace Asteroids
             ProcessKeyboard(gameTime);
             spaceship.Update(gameTime);
             camera.Update(spaceship);
+            skybox.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -87,8 +92,8 @@ namespace Asteroids
             GraphicsDevice.Clear(Color.CornflowerBlue);
             effect.Projection = camera.getProjection();
             effect.View = camera.getView();
-            spaceship.Draw(spriteBatch, camera.getView(), camera.getProjection());
-
+            skybox.Draw(device, camera.getView(), camera.getProjection());
+            spaceship.Draw(camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
     }
