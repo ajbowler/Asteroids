@@ -54,33 +54,11 @@ namespace Asteroids
             skybox = null;
         }
 
-        private void ProcessKeyboard(GameTime gameTime)
-        {
-            float leftRightRot = 0;
-
-            float turningSpeed = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
-            turningSpeed *= 1.6f;
-            KeyboardState keys = Keyboard.GetState();
-            if (keys.IsKeyDown(Keys.D))
-                leftRightRot += turningSpeed;
-            if (keys.IsKeyDown(Keys.A))
-                leftRightRot -= turningSpeed;
-            float upDownRot = 0;
-            if (keys.IsKeyDown(Keys.S))
-                upDownRot += turningSpeed;
-            if (keys.IsKeyDown(Keys.W))
-                upDownRot -= turningSpeed;
-            Quaternion additionalRot = Quaternion.CreateFromAxisAngle(new Vector3(0, 0, -1), leftRightRot) * 
-                Quaternion.CreateFromAxisAngle(new Vector3(1, 0, 0), upDownRot);
-            spaceship.setRotation(spaceship.getRotation() * additionalRot);
-        }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            ProcessKeyboard(gameTime);
             spaceship.Update(gameTime);
             camera.Update(spaceship);
             base.Update(gameTime);

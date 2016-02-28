@@ -11,10 +11,13 @@ namespace Asteroids
         public const string MODEL_PATH = "Models/spaceship";
         public const string TEXTURE_PATH = "Models/metal";
 
+        public float ACCEL_CONSTANT = .4f;
+        public float DECEL_CONSTANT = .02f;
+        public float VELOCITY_MAX = 20f;
+
         private Vector3 position;
         private Quaternion rotation;
-        private Vector3 acceleration;
-        private Vector3 velocity;
+        private float velocity;
         private Matrix world;
         private Model model;
         private Texture2D texture;
@@ -25,8 +28,7 @@ namespace Asteroids
             this.rotation = Quaternion.Identity;
             this.model = null;
             this.texture = null;
-            this.velocity = new Vector3(0, 0, 0);
-            this.acceleration = new Vector3(0, 0, 0);
+            this.velocity = 0f;
             Matrix world = Matrix.Identity;
         }
 
@@ -49,13 +51,14 @@ namespace Asteroids
 
         public void Update(GameTime gameTime)
         {
-            float moveSpeed = gameTime.ElapsedGameTime.Milliseconds / 50.0f;
-            MoveForward(moveSpeed);
+            ProcessKeyboard(gameTime);
+            ProcessMouse(gameTime);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            setWorldMatrix(Matrix.CreateRotationX(MathHelper.Pi * 3 / 2) *
+            setWorldMatrix(Matrix.CreateRotationX(MathHelper.Pi / 2) *
+                Matrix.CreateRotationZ(MathHelper.Pi) *
                 Matrix.CreateFromQuaternion(getRotation()) *
                 Matrix.CreateTranslation(getPosition()));
 
@@ -76,12 +79,6 @@ namespace Asteroids
                 }
                 mesh.Draw();
             }
-        }
-
-        public void MoveForward(float speed)
-        {
-            Vector3 addVector = Vector3.Transform(getVelocity(), getRotation());
-            setPosition(this.position + (addVector * speed));
         }
 
         public Vector3 getPosition()
@@ -114,24 +111,64 @@ namespace Asteroids
             this.world = world;
         }
 
-        public Vector3 getVelocity()
+        public float getVelocity()
         {
             return this.velocity;
         }
 
-        public void setVelocity(Vector3 velocity)
+        public void setVelocity(float velocity)
         {
             this.velocity = velocity;
         }
 
-        public Vector3 getAcceleration()
+        private void ProcessKeyboard(GameTime gameTime)
         {
-            return this.acceleration;
+            KeyboardState keys = Keyboard.GetState();
+
+            // Move forward
+            if (keys.IsKeyDown(Keys.W))
+            {
+                Thrust(gameTime);
+            }
+            else
+            {
+                Stop(gameTime);
+            }
         }
 
-        public void setAcceleration(Vector3 acceleration)
+        /**
+         * The direction vector is a bit different with this model 
+         * because of the way it's oriented in Blender.
+         */
+        private void Thrust(GameTime gameTime)
         {
-            this.acceleration = acceleration;
+            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            float newVelocity = getVelocity() +
+                (ACCEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
+            if (newVelocity > VELOCITY_MAX)
+                newVelocity = VELOCITY_MAX;
+            setVelocity(newVelocity);
+            Vector3 newPosition = getWorldMatrix().Up * newVelocity;
+            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
+            setPosition(newPosition + getPosition());
+        }
+
+        private void Stop(GameTime gameTime)
+        {
+            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            float newVelocity = -getVelocity() +
+                (DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
+            if (newVelocity < 0)
+                newVelocity = 0;
+            setVelocity(newVelocity);
+            Vector3 newPosition = getWorldMatrix().Up * newVelocity;
+            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
+            setPosition(newPosition + getPosition());
+        }
+
+        private void ProcessMouse(GameTime gameTime)
+        {
+
         }
     }
 }
