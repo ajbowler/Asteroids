@@ -12,7 +12,7 @@ namespace Asteroids
         public const string TEXTURE_PATH = "Models/metal";
 
         public float ACCEL_CONSTANT = .4f;
-        public float DECEL_CONSTANT = .02f;
+        public float DECEL_CONSTANT = .2f;
         public float VELOCITY_MAX = 20f;
 
         private Vector3 position;
@@ -156,8 +156,8 @@ namespace Asteroids
         private void Stop(GameTime gameTime)
         {
             float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            float newVelocity = -getVelocity() +
-                (DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
+            float newVelocity = getVelocity() +
+                (-DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
             if (newVelocity < 0)
                 newVelocity = 0;
             setVelocity(newVelocity);
