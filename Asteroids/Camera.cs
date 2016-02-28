@@ -28,13 +28,13 @@ namespace Asteroids
                 MathHelper.PiOver4,
                 device.Viewport.AspectRatio,
                 1.0f,
-                1000.0f
+                2000.0f
             );
         }
 
         public void Update(Spaceship spaceship)
         {
-            Vector3 newPosition = new Vector3(0f, 15f, 40f);
+            Vector3 newPosition = new Vector3(0f, 15f, -40f);
             newPosition = Vector3.Transform(
                 newPosition, 
                 Matrix.CreateFromQuaternion(spaceship.getRotation())
@@ -55,7 +55,7 @@ namespace Asteroids
 
             setProjection(
                 Matrix.CreatePerspectiveFieldOfView(
-                    MathHelper.PiOver4, this.device.Viewport.AspectRatio, 1.0f, 1000.0f
+                    MathHelper.PiOver4, this.device.Viewport.AspectRatio, 1.0f, 100000.0f
                 )
             );
         }
