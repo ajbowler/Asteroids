@@ -11,9 +11,9 @@ namespace Asteroids
         public const string MODEL_PATH = "Models/spaceship";
         public const string TEXTURE_PATH = "Models/metal";
 
-        public float ACCEL_CONSTANT = .4f;
+        public float ACCEL_CONSTANT = .7f;
         public float DECEL_CONSTANT = .2f;
-        public float VELOCITY_MAX = 20f;
+        public float VELOCITY_MAX = 40f;
 
         private Vector3 position;
         private Quaternion rotation;
@@ -124,11 +124,23 @@ namespace Asteroids
         private void ProcessKeyboard(GameTime gameTime)
         {
             KeyboardState keys = Keyboard.GetState();
-
-            // Move forward
-            if (keys.IsKeyDown(Keys.W))
+            if (keys.GetPressedKeys().Length > 0)
             {
-                Thrust(gameTime);
+                // Move forward
+                if (keys.IsKeyDown(Keys.W))
+                {
+                    Thrust(gameTime);
+                }
+
+                if (keys.IsKeyDown(Keys.D))
+                {
+                    Roll(gameTime, "right");
+                }
+
+                if (keys.IsKeyDown(Keys.A))
+                {
+                    Roll(gameTime, "left");
+                }
             }
             else
             {
@@ -138,7 +150,7 @@ namespace Asteroids
 
         /**
          * The direction vector is a bit different with this model 
-         * because of the way it's oriented in Blender.
+         * because of the way it's oriented in Blender. Here we use the Up direction.
          */
         private void Thrust(GameTime gameTime)
         {
@@ -164,6 +176,22 @@ namespace Asteroids
             Vector3 newPosition = getWorldMatrix().Up * newVelocity;
             setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
             setPosition(newPosition + getPosition());
+        }
+
+        private void Roll(GameTime gameTime, string direction)
+        {
+            Quaternion rotation = getRotation();
+            float rotationDirection = 0.2f / gameTime.ElapsedGameTime.Milliseconds;
+            if (direction.Equals("right"))
+            {
+                rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 0, 1), rotationDirection);
+            }
+            else if (direction.Equals("left"))
+            {
+                rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 0, 1), -rotationDirection);
+            }
+
+            setRotation(rotation);
         }
 
         private void ProcessMouse(GameTime gameTime)
