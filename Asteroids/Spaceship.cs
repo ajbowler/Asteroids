@@ -112,6 +112,7 @@ namespace Asteroids
         public void setPosition(Vector3 position)
         {
             this.position = position;
+            setBoundingSphere(position, getBoundingSphere().Radius);
         }
 
         public Quaternion getRotation()
@@ -186,7 +187,6 @@ namespace Asteroids
             Vector3 newPosition = getWorldMatrix().Up * newVelocity;
             setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
             setPosition(newPosition + getPosition());
-            setBoundingSphere(getPosition(), boundingSphere.Radius);
         }
 
         private void Stop(GameTime gameTime)

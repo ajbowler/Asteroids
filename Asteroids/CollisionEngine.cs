@@ -24,9 +24,9 @@ namespace Asteroids
             Vector3 position = spaceship.getPosition();
             float radius = spaceship.getBoundingSphere().Radius;
             return (
-                position.X + radius > Math.Abs(EDGE_OF_UNIVERSE) ||
-                position.Y + radius > Math.Abs(EDGE_OF_UNIVERSE) ||
-                position.Z + radius > Math.Abs(EDGE_OF_UNIVERSE)
+                Math.Abs(position.X) + radius > EDGE_OF_UNIVERSE ||
+                Math.Abs(position.Y) + radius > EDGE_OF_UNIVERSE ||
+                Math.Abs(position.Z) + radius > EDGE_OF_UNIVERSE
             );
         }
     }
