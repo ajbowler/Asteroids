@@ -30,7 +30,7 @@ namespace Asteroids
             this.model = null;
             this.texture = null;
             this.velocity = 0f;
-            Matrix world = Matrix.Identity;
+            this.world = Matrix.Identity;
         }
 
         public void LoadModel(ContentManager content, BasicEffect effect)
@@ -64,28 +64,26 @@ namespace Asteroids
                 {
                     int stride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
                     byte[] vertexData = new byte[stride * meshPart.NumVertices];
-                    meshPart.VertexBuffer.GetData(meshPart.VertexOffset * stride, vertexData, 0, meshPart.NumVertices, 1);
+                    meshPart.VertexBuffer.GetData(meshPart.VertexOffset * stride, vertexData, 0, meshPart.NumVertices, 1); // fixed 13/4/11
                     Vector3 vertPosition = new Vector3();
-                    for (int i = 0; i < vertexData.Length; i++)
+                    for (int i = 0; i < vertexData.Length; i += stride)
                     {
                         vertPosition.X = BitConverter.ToSingle(vertexData, i);
                         vertPosition.Y = BitConverter.ToSingle(vertexData, i + sizeof(float));
                         vertPosition.Z = BitConverter.ToSingle(vertexData, i + sizeof(float) * 2);
                         meshMin = Vector3.Min(meshMin, vertPosition);
-                        meshMax = Vector3.Min(meshMax, vertPosition);    
+                        meshMax = Vector3.Max(meshMax, vertPosition);
                     }
                 }
 
                 Matrix[] transformation = new Matrix[this.model.Bones.Count];
                 this.model.CopyAbsoluteBoneTransformsTo(transformation);
-
                 meshMin = Vector3.Transform(meshMin, transformation[mesh.ParentBone.Index]);
                 meshMax = Vector3.Transform(meshMax, transformation[mesh.ParentBone.Index]);
                 modelMin = Vector3.Min(modelMin, meshMin);
                 modelMax = Vector3.Max(modelMax, meshMax);
-
-                this.boundingBox = new BoundingBox(modelMin, modelMax);
             }
+            this.boundingBox = new BoundingBox(modelMin, modelMax);
         }
 
         public void Update(GameTime gameTime)
