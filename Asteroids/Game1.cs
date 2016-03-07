@@ -11,6 +11,7 @@ namespace Asteroids
         GraphicsDevice device;
         SpriteBatch spriteBatch;
         BasicEffect effect;
+        CollisionEngine collisionEngine;
 
         Camera camera;
         Skybox skybox;
@@ -43,11 +44,12 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
             device = graphics.GraphicsDevice;
             camera = new Camera(device);
+            collisionEngine = new CollisionEngine();
             skybox = new Skybox();
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
-            spaceship.LoadBoundingBox();
+            collisionEngine.LoadBoundingBox(spaceship.getModel());
         }
 
         protected override void UnloadContent()
