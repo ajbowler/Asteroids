@@ -11,9 +11,9 @@ namespace Asteroids
         public const string MODEL_PATH = "Models/spaceship";
         public const string TEXTURE_PATH = "Models/metal";
 
-        public float ACCEL_CONSTANT = .7f;
-        public float DECEL_CONSTANT = .2f;
-        public float VELOCITY_MAX = 40f;
+        public const float ACCEL_CONSTANT = .7f;
+        public const float DECEL_CONSTANT = .2f;
+        public const float VELOCITY_MAX = 40f;
 
         private Vector3 position;
         private Quaternion rotation;
