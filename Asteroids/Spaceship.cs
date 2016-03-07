@@ -196,7 +196,21 @@ namespace Asteroids
 
         private void ProcessMouse(GameTime gameTime)
         {
+            Quaternion rotation = getRotation();
+            float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
+            MouseState mouseState = Mouse.GetState();
+            if (mouseState != null)
+            {
+                Quaternion newRotation = Quaternion.CreateFromYawPitchRoll(
+                    mouseState.X * -rotationFactor, 
+                    mouseState.Y * rotationFactor, 
+                    0
+                );
 
+                Mouse.SetPosition(0, 0);
+                rotation *= newRotation;
+                setRotation(rotation);
+            }
         }
     }
 }

@@ -33,6 +33,8 @@ namespace Asteroids
             graphics.ApplyChanges();
             Window.Title = "Asteroids 3D";
 
+            Mouse.SetPosition(0, 0);
+
             base.Initialize();
         }
 
