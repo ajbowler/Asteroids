@@ -51,8 +51,9 @@ namespace Asteroids
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
         {
+            CheckCollisions(collisionEngine);
             ProcessKeyboard(gameTime);
             ProcessMouse(gameTime);
         }
@@ -217,6 +218,16 @@ namespace Asteroids
                 Mouse.SetPosition(0, 0);
                 rotation *= newRotation;
                 setRotation(rotation);
+            }
+        }
+
+        private void CheckCollisions(CollisionEngine collisionEngine)
+        {
+            // Check if the ship hits the edge of the universe
+            if (collisionEngine.HitEdgeOfUniverse(this.boundingBox))
+            {
+                // For now, just negate the velocity and send the ship flying backwards
+                this.setVelocity(-getVelocity());
             }
         }
     }

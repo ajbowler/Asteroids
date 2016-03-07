@@ -10,6 +10,10 @@ namespace Asteroids
 {
     class CollisionEngine
     {
+        // The max distance of the skybox is 30K, but this eliminates 
+        // any overlap between the skybox and the models
+        public const float EDGE_OF_UNIVERSE = 29000f;
+
         public CollisionEngine()
         {
 
@@ -49,6 +53,25 @@ namespace Asteroids
                 modelMax = Vector3.Max(modelMax, meshMax);
             }
             return new BoundingBox(modelMin, modelMax);
+        }
+
+        public bool HitEdgeOfUniverse(BoundingBox boundingBox)
+        {
+            Vector3[] corners = boundingBox.GetCorners();
+            foreach (Vector3 corner in corners)
+            {
+                float x = corner.X;
+                float y = corner.Y;
+                float z = corner.Z;
+                if (x >= Math.Abs(EDGE_OF_UNIVERSE) ||
+                    y >= Math.Abs(EDGE_OF_UNIVERSE) ||
+                    z >= Math.Abs(EDGE_OF_UNIVERSE))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Asteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            spaceship.Update(gameTime);
+            spaceship.Update(collisionEngine, gameTime);
             camera.Update(spaceship);
             base.Update(gameTime);
         }
