@@ -181,14 +181,14 @@ namespace Asteroids
         private void Roll(GameTime gameTime, string direction)
         {
             Quaternion rotation = getRotation();
-            float rotationDirection = 0.2f / gameTime.ElapsedGameTime.Milliseconds;
+            float rotationDirection = 0.4f / gameTime.ElapsedGameTime.Milliseconds;
             if (direction.Equals("right"))
             {
-                rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 0, 1), rotationDirection);
+                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, -rotationDirection);
             }
             else if (direction.Equals("left"))
             {
-                rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 0, 1), -rotationDirection);
+                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, rotationDirection);
             }
 
             setRotation(rotation);
