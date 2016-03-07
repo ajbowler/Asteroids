@@ -240,7 +240,7 @@ namespace Asteroids
         private void CheckCollisions(CollisionEngine collisionEngine)
         {
             // Check if the ship hits the edge of the universe
-            if (collisionEngine.HitEdgeOfUniverse(this.boundingSphere))
+            if (collisionEngine.ShipCollidesWithEdge(this))
             {
                 // For now, just negate the velocity and send the ship flying backwards
                 this.setVelocity(-getVelocity());

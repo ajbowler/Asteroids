@@ -19,9 +19,15 @@ namespace Asteroids
 
         }
 
-        public bool HitEdgeOfUniverse(BoundingSphere boundingSphere)
+        public bool ShipCollidesWithEdge(Spaceship spaceship)
         {
-            return false; // TODO
+            Vector3 position = spaceship.getPosition();
+            float radius = spaceship.getBoundingSphere().Radius;
+            return (
+                position.X + radius > Math.Abs(EDGE_OF_UNIVERSE) ||
+                position.Y + radius > Math.Abs(EDGE_OF_UNIVERSE) ||
+                position.Z + radius > Math.Abs(EDGE_OF_UNIVERSE)
+            );
         }
     }
 }
