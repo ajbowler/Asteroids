@@ -49,7 +49,6 @@ namespace Asteroids
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
-            collisionEngine.LoadBoundingBox(spaceship.getModel());
         }
 
         protected override void UnloadContent()

@@ -21,7 +21,7 @@ namespace Asteroids
         private Matrix world;
         private Model model;
         private Texture2D texture;
-        private BoundingBox boundingBox;
+        private BoundingSphere boundingSphere;
 
         public Spaceship()
         {
@@ -31,14 +31,17 @@ namespace Asteroids
             this.texture = null;
             this.velocity = 0f;
             this.world = Matrix.Identity;
-            this.boundingBox = new BoundingBox();
+            this.boundingSphere = new BoundingSphere();
         }
 
         public void LoadModel(ContentManager content, BasicEffect effect)
         {
+            float radius = 0f;
             this.model = content.Load<Model>(MODEL_PATH);
             foreach (ModelMesh mesh in model.Meshes)
             {
+                radius = Math.Max(radius, mesh.BoundingSphere.Radius);
+
                 foreach (BasicEffect currentEffect in mesh.Effects)
                 {
                     this.texture = currentEffect.Texture;
@@ -49,6 +52,8 @@ namespace Asteroids
                     meshPart.Effect = effect.Clone();
                 }
             }
+
+            this.boundingSphere = new BoundingSphere(getPosition(), radius);
         }
 
         public void Update(CollisionEngine collisionEngine, GameTime gameTime)
@@ -87,6 +92,16 @@ namespace Asteroids
         public Model getModel()
         {
             return this.model;
+        }
+
+        public BoundingSphere getBoundingSphere()
+        {
+            return this.boundingSphere;
+        }
+
+        public void setBoundingSphere(Vector3 position, float radius)
+        {
+            this.boundingSphere = new BoundingSphere(position, radius);
         }
 
         public Vector3 getPosition()
@@ -171,6 +186,7 @@ namespace Asteroids
             Vector3 newPosition = getWorldMatrix().Up * newVelocity;
             setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
             setPosition(newPosition + getPosition());
+            setBoundingSphere(getPosition(), boundingSphere.Radius);
         }
 
         private void Stop(GameTime gameTime)
@@ -224,7 +240,7 @@ namespace Asteroids
         private void CheckCollisions(CollisionEngine collisionEngine)
         {
             // Check if the ship hits the edge of the universe
-            if (collisionEngine.HitEdgeOfUniverse(this.boundingBox))
+            if (collisionEngine.HitEdgeOfUniverse(this.boundingSphere))
             {
                 // For now, just negate the velocity and send the ship flying backwards
                 this.setVelocity(-getVelocity());
