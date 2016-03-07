@@ -21,6 +21,7 @@ namespace Asteroids
         private Matrix world;
         private Model model;
         private Texture2D texture;
+        private BoundingBox boundingBox;
 
         public Spaceship()
         {
@@ -46,6 +47,44 @@ namespace Asteroids
                 {
                     meshPart.Effect = effect.Clone();
                 }
+            }
+        }
+
+        public void LoadBoundingBox()
+        {
+            Vector3 modelMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            Vector3 modelMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+
+            foreach (ModelMesh mesh in this.model.Meshes)
+            {
+                Vector3 meshMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+                Vector3 meshMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    int stride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
+                    byte[] vertexData = new byte[stride * meshPart.NumVertices];
+                    meshPart.VertexBuffer.GetData(meshPart.VertexOffset * stride, vertexData, 0, meshPart.NumVertices, 1);
+                    Vector3 vertPosition = new Vector3();
+                    for (int i = 0; i < vertexData.Length; i++)
+                    {
+                        vertPosition.X = BitConverter.ToSingle(vertexData, i);
+                        vertPosition.Y = BitConverter.ToSingle(vertexData, i + sizeof(float));
+                        vertPosition.Z = BitConverter.ToSingle(vertexData, i + sizeof(float) * 2);
+                        meshMin = Vector3.Min(meshMin, vertPosition);
+                        meshMax = Vector3.Min(meshMax, vertPosition);    
+                    }
+                }
+
+                Matrix[] transformation = new Matrix[this.model.Bones.Count];
+                this.model.CopyAbsoluteBoneTransformsTo(transformation);
+
+                meshMin = Vector3.Transform(meshMin, transformation[mesh.ParentBone.Index]);
+                meshMax = Vector3.Transform(meshMax, transformation[mesh.ParentBone.Index]);
+                modelMin = Vector3.Min(modelMin, meshMin);
+                modelMax = Vector3.Max(modelMax, meshMax);
+
+                this.boundingBox = new BoundingBox(modelMin, modelMax);
             }
         }
 
