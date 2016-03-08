@@ -22,12 +22,11 @@ namespace Asteroids
         private Matrix world;
         private BoundingSphere boundingSphere;
 
-        public Torpedo(Spaceship spaceship)
+        public Torpedo(Vector3 position)
         {
             this.model = null;
             this.texture = null;
-            Vector3 shipPos = spaceship.getPosition();
-            this.position = new Vector3(shipPos.X, shipPos.Y, shipPos.Z + 20f);
+            this.position = position;
             this.velocity = VELOCITY_CONST;
             this.world = Matrix.Identity;
         }

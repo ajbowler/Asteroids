@@ -101,7 +101,7 @@ namespace Asteroids
             // Do not fire until the 2 second interval has passed
             if (timer == 0)
             {
-                Torpedo torp = new Torpedo(spaceship);
+                Torpedo torp = new Torpedo(spaceship.getPosition());
                 torp.LoadModel(this.Content, effect);
                 torpedoes.Add(torp);
                 timer = TORPEDO_FIRE_INTERVAL;
