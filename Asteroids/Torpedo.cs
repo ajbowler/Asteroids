@@ -12,8 +12,10 @@ namespace Asteroids
     class Torpedo
     {
         public const string MODEL_PATH = "Models/torpedo";
+        public const string TEXTURE_PATH = "Models/torp_texture";
 
         private Model model;
+        private Texture2D texture;
         private Vector3 position;
         private float velocity;
         private Matrix world;
@@ -22,6 +24,7 @@ namespace Asteroids
         public Torpedo()
         {
             this.model = null;
+            this.texture = null;
             this.position = new Vector3();
             this.velocity = 0f;
             this.world = Matrix.Identity;
@@ -35,6 +38,11 @@ namespace Asteroids
             {
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
 
+                foreach (BasicEffect currentEffect in mesh.Effects)
+                {
+                    this.texture = currentEffect.Texture;
+                }
+
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
                     meshPart.Effect = effect.Clone();
@@ -42,6 +50,34 @@ namespace Asteroids
             }
 
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
+        }
+
+        public void Update(GameTime gametime)
+        {
+            // TODO
+        }
+
+        public void Draw(ContentManager content, Matrix view, Matrix projection)
+        {
+            setWorldMatrix(Matrix.CreateTranslation(getPosition()) *
+                Matrix.CreateScale(0.5f));
+            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
+
+            Matrix[] transformation = new Matrix[this.model.Bones.Count];
+            this.model.CopyAbsoluteBoneTransformsTo(transformation);
+            foreach (ModelMesh mesh in this.model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.World = world;
+                    effect.View = view;
+                    effect.Projection = projection;
+                    effect.EnableDefaultLighting();
+                    effect.TextureEnabled = true;
+                    effect.Texture = this.texture;
+                }
+                mesh.Draw();
+            }
         }
 
         public Model getModel()

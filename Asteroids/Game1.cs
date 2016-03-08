@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -16,6 +17,7 @@ namespace Asteroids
         Camera camera;
         Skybox skybox;
         Spaceship spaceship;
+        List<Torpedo> torpedoes;
 
         public Game1()
         {
@@ -49,6 +51,9 @@ namespace Asteroids
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
+            torpedoes = new List<Torpedo>();
+            torpedoes.Add(new Torpedo());
+            torpedoes[0].LoadModel(this.Content, effect);
         }
 
         protected override void UnloadContent()
@@ -75,6 +80,7 @@ namespace Asteroids
             effect.View = camera.getView();
             skybox.Draw(device, camera.getView(), camera.getProjection());
             spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
+            torpedoes[0].Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
     }
