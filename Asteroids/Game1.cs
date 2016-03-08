@@ -72,8 +72,8 @@ namespace Asteroids
             timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
             if (timer < 0)
                 timer = 0;
-
-            spaceship.Update(collisionEngine, originalMouseState, gameTime, device);
+            Vector3 direction = camera.getDirection();
+            spaceship.Update(direction, collisionEngine, originalMouseState, gameTime, device);
             camera.Update(spaceship);
 
             ProcessClick(gameTime);

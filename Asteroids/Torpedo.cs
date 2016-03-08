@@ -55,10 +55,10 @@ namespace Asteroids
 
         public void Update(GameTime gameTime)
         {
-            float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
-            Vector3 velocity = speed * getDirection();
-            Vector3 newPos = getPosition() + velocity;
-            setPosition(newPos);
+            //float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
+            //Vector3 velocity = speed * getDirection();
+            //Vector3 newPos = getPosition() + velocity;
+            //setPosition(newPos);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)

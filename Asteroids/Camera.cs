@@ -79,5 +79,10 @@ namespace Asteroids
         {
             this.projection = projection;
         }
+
+        public Vector3 getDirection()
+        {
+            return Matrix.Invert(this.view).Forward;
+        }
     }
 }

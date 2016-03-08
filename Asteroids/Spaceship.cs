@@ -11,13 +11,14 @@ namespace Asteroids
         public const string MODEL_PATH = "Models/spaceship";
         public const string TEXTURE_PATH = "Models/metal";
 
-        public const float ACCEL_CONSTANT = .7f;
-        public const float DECEL_CONSTANT = .2f;
+        public const float ACCEL_CONSTANT = 0.7f;
+        public const float DECEL_CONSTANT = 0.4f;
         public const float VELOCITY_MAX = 40f;
 
         private Vector3 position;
         private Quaternion rotation;
-        private float velocity;
+        private Vector3 velocity;
+        private float speed;
         private Matrix world;
         private Model model;
         private Texture2D texture;
@@ -29,7 +30,8 @@ namespace Asteroids
             this.rotation = Quaternion.Identity;
             this.model = null;
             this.texture = null;
-            this.velocity = 0f;
+            this.velocity = Vector3.Zero;
+            this.speed = 0f;
             this.world = Matrix.Identity;
             this.boundingSphere = new BoundingSphere();
         }
@@ -43,24 +45,20 @@ namespace Asteroids
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
 
                 foreach (BasicEffect currentEffect in mesh.Effects)
-                {
                     this.texture = currentEffect.Texture;
-                }
 
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
                     meshPart.Effect = effect.Clone();
-                }
             }
 
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
         }
 
-        public void Update(CollisionEngine collisionEngine, MouseState originalMouseState, 
+        public void Update(Vector3 direction, CollisionEngine collisionEngine, MouseState originalMouseState, 
             GameTime gameTime, GraphicsDevice device)
         {
             CheckCollisions(collisionEngine);
-            ProcessKeyboard(gameTime);
+            ProcessKeyboard(direction, gameTime);
             ProcessMouse(originalMouseState, gameTime, device);
         }
 
@@ -88,6 +86,105 @@ namespace Asteroids
                 }
                 mesh.Draw();
             }
+        }
+
+        private void ProcessKeyboard(Vector3 direction, GameTime gameTime)
+        {
+            KeyboardState keys = Keyboard.GetState();
+            if (keys.GetPressedKeys().Length > 0)
+            {
+                if (keys.IsKeyDown(Keys.W))
+                    Thrust(direction, gameTime);
+
+                if (keys.IsKeyDown(Keys.D))
+                    Roll(gameTime, "right");
+
+                if (keys.IsKeyDown(Keys.A))
+                    Roll(gameTime, "left");
+            }
+            else
+                Stop(direction, gameTime);
+        }
+
+        /**
+         * The direction vector is a bit different with this model 
+         * because of the way it's oriented in Blender. Here we use the Up direction.
+         */
+        private void Thrust(Vector3 direction, GameTime gameTime)
+        {
+            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            float speed = (ACCEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) 
+                * changeInTime
+                + getSpeed();
+            if (speed > VELOCITY_MAX)
+                speed = VELOCITY_MAX;
+            setSpeed(speed);
+            Vector3 velocity = calculateVelocityVector(speed, direction);
+            setVelocity(velocity);
+            Vector3 newPosition = getPosition() + velocity;
+            setPosition(newPosition);
+        }
+
+        private void Stop(Vector3 direction, GameTime gameTime)
+        {
+            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            float speed = (-DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) 
+                * changeInTime
+                + getSpeed();
+            if (speed < 0)
+                speed = 0;
+            setSpeed(speed);
+            Vector3 velocity = calculateVelocityVector(speed, direction);
+            setVelocity(velocity);
+            Vector3 newPosition = getPosition() + velocity;
+            setPosition(newPosition);
+        }
+
+        private Vector3 calculateVelocityVector(float speed, Vector3 direction)
+        {
+            Vector3 velocity = Vector3.Zero + direction;
+            velocity.Normalize();
+            velocity *= speed;
+            return velocity;
+        }
+
+        private void Roll(GameTime gameTime, string direction)
+        {
+            Quaternion rotation = getRotation();
+            float rotationDirection = 0.4f / gameTime.ElapsedGameTime.Milliseconds;
+            if (direction.Equals("right"))
+                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, -rotationDirection);
+            else if (direction.Equals("left"))
+                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, rotationDirection);
+            setRotation(rotation);
+        }
+
+        private void ProcessMouse(MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
+        {
+            MouseState currentMouseState = Mouse.GetState();
+            if (currentMouseState != originalMouseState)
+            {
+                float xDifference = currentMouseState.X - originalMouseState.X;
+                float yDifference = currentMouseState.Y - originalMouseState.Y;
+                Quaternion rotation = getRotation();
+                float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
+                Quaternion newRotation = Quaternion.CreateFromYawPitchRoll(
+                    xDifference * -rotationFactor,
+                    yDifference * rotationFactor,
+                    0
+                );
+
+                Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+                rotation *= newRotation;
+                setRotation(rotation);
+            }
+        }
+
+        private void CheckCollisions(CollisionEngine collisionEngine)
+        {
+            // Check if the ship hits the edge of the universe
+            if (collisionEngine.ShipCollidesWithEdge(this))
+                this.setVelocity(-getVelocity());
         }
 
         public Model getModel()
@@ -136,118 +233,24 @@ namespace Asteroids
             this.world = world;
         }
 
-        public float getVelocity()
+        public Vector3 getVelocity()
         {
             return this.velocity;
         }
 
-        public void setVelocity(float velocity)
+        public float getSpeed()
+        {
+            return this.speed;
+        }
+
+        public void setSpeed(float speed)
+        {
+            this.speed = speed;
+        }
+
+        public void setVelocity(Vector3 velocity)
         {
             this.velocity = velocity;
-        }
-
-        private void ProcessKeyboard(GameTime gameTime)
-        {
-            KeyboardState keys = Keyboard.GetState();
-            if (keys.GetPressedKeys().Length > 0)
-            {
-                // Move forward
-                if (keys.IsKeyDown(Keys.W))
-                {
-                    Thrust(gameTime);
-                }
-
-                if (keys.IsKeyDown(Keys.D))
-                {
-                    Roll(gameTime, "right");
-                }
-
-                if (keys.IsKeyDown(Keys.A))
-                {
-                    Roll(gameTime, "left");
-                }
-            }
-            else
-            {
-                Stop(gameTime);
-            }
-        }
-
-        /**
-         * The direction vector is a bit different with this model 
-         * because of the way it's oriented in Blender. Here we use the Up direction.
-         */
-        private void Thrust(GameTime gameTime)
-        {
-            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            float newVelocity = getVelocity() +
-                (ACCEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
-            if (newVelocity > VELOCITY_MAX)
-                newVelocity = VELOCITY_MAX;
-            setVelocity(newVelocity);
-            Vector3 newPosition = getWorldMatrix().Up * newVelocity;
-            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
-            setPosition(newPosition + getPosition());
-        }
-
-        private void Stop(GameTime gameTime)
-        {
-            float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            float newVelocity = getVelocity() +
-                (-DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) * changeInTime;
-            if (newVelocity < 0)
-                newVelocity = 0;
-            setVelocity(newVelocity);
-            Vector3 newPosition = getWorldMatrix().Up * newVelocity;
-            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
-            setPosition(newPosition + getPosition());
-        }
-
-        private void Roll(GameTime gameTime, string direction)
-        {
-            Quaternion rotation = getRotation();
-            float rotationDirection = 0.4f / gameTime.ElapsedGameTime.Milliseconds;
-            if (direction.Equals("right"))
-            {
-                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, -rotationDirection);
-            }
-            else if (direction.Equals("left"))
-            {
-                rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, rotationDirection);
-            }
-
-            setRotation(rotation);
-        }
-
-        private void ProcessMouse(MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
-        {
-            MouseState currentMouseState = Mouse.GetState();
-            if (currentMouseState != originalMouseState)
-            {
-                float xDifference = currentMouseState.X - originalMouseState.X;
-                float yDifference = currentMouseState.Y - originalMouseState.Y;
-                Quaternion rotation = getRotation();
-                float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
-                Quaternion newRotation = Quaternion.CreateFromYawPitchRoll(
-                    xDifference * -rotationFactor,
-                    yDifference * rotationFactor,
-                    0
-                );
-
-                Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
-                rotation *= newRotation;
-                setRotation(rotation);
-            }
-        }
-
-        private void CheckCollisions(CollisionEngine collisionEngine)
-        {
-            // Check if the ship hits the edge of the universe
-            if (collisionEngine.ShipCollidesWithEdge(this))
-            {
-                // For now, just negate the velocity and send the ship flying backwards
-                this.setVelocity(-getVelocity());
-            }
         }
     }
 }
