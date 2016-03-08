@@ -52,7 +52,7 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
             torpedoes = new List<Torpedo>();
-            torpedoes.Add(new Torpedo());
+            torpedoes.Add(new Torpedo(spaceship));
             torpedoes[0].LoadModel(this.Content, effect);
         }
 
