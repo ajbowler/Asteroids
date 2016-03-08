@@ -13,7 +13,7 @@ namespace Asteroids
     {
         public const string MODEL_PATH = "Models/torpedo";
         public const string TEXTURE_PATH = "Models/torp_texture";
-        public const float VELOCITY_CONST = 5000f;
+        public const float VELOCITY_CONST = 4000f;
 
         private Model model;
         private Texture2D texture;
@@ -26,8 +26,9 @@ namespace Asteroids
         {
             this.model = null;
             this.texture = null;
-            this.position = setInitialPosition(spaceship);
-            this.velocity = 0f;
+            Vector3 shipPos = spaceship.getPosition();
+            this.position = new Vector3(shipPos.X, shipPos.Y, shipPos.Z + 20f);
+            this.velocity = VELOCITY_CONST;
             this.world = Matrix.Identity;
         }
 
@@ -128,13 +129,6 @@ namespace Asteroids
         public void setBoundingSphere(BoundingSphere boundingSphere)
         {
             this.boundingSphere = boundingSphere;
-        }
-
-        private Vector3 setInitialPosition(Spaceship spaceship)
-        {
-            Vector3 shipPos = spaceship.getPosition();
-            Vector3 position = new Vector3(shipPos.X, shipPos.Y, shipPos.Z + 20f);
-            return position;
         }
     }
 }

@@ -19,6 +19,8 @@ namespace Asteroids
         Skybox skybox;
         Spaceship spaceship;
         List<Torpedo> torpedoes;
+        public const int TORPEDO_FIRE_INTERVAL = 2;
+        float timer = 0;
 
         public Game1()
         {
@@ -53,8 +55,6 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
             torpedoes = new List<Torpedo>();
-            torpedoes.Add(new Torpedo(spaceship));
-            torpedoes[0].LoadModel(this.Content, effect);
         }
 
         protected override void UnloadContent()
@@ -69,15 +69,18 @@ namespace Asteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer < 0)
+                timer = 0;
+
             spaceship.Update(collisionEngine, originalMouseState, gameTime, device);
             camera.Update(spaceship);
 
             ProcessClick(gameTime);
 
             foreach (Torpedo torp in torpedoes)
-            {
                 torp.Update(gameTime);
-            }
+
             base.Update(gameTime);
         }
 
@@ -88,8 +91,31 @@ namespace Asteroids
             effect.View = camera.getView();
             skybox.Draw(device, camera.getView(), camera.getProjection());
             spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
-            torpedoes[0].Draw(this.Content, camera.getView(), camera.getProjection());
+            foreach (Torpedo torp in torpedoes)
+                torp.Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
+        }
+
+        private void FireTorpedo()
+        {
+            // Do not fire until the 2 second interval has passed
+            if (timer == 0)
+            {
+                Torpedo torp = new Torpedo(spaceship);
+                torp.LoadModel(this.Content, effect);
+                torpedoes.Add(torp);
+                timer = TORPEDO_FIRE_INTERVAL;
+            }
+        }
+
+        private void ProcessClick(GameTime gameTime)
+        {
+            MouseState mouseState = Mouse.GetState();
+            
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                FireTorpedo();
+            }
         }
     }
 }
