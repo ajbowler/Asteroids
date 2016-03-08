@@ -13,21 +13,21 @@ namespace Asteroids
     {
         public const string MODEL_PATH = "Models/torpedo";
         public const string TEXTURE_PATH = "Models/torp_texture";
-        public const float VELOCITY_CONST = 4000f;
+        public const float VELOCITY_CONST = 2f;
 
         private Model model;
         private Texture2D texture;
         private Vector3 position;
-        private float velocity;
+        private Vector3 direction;
         private Matrix world;
         private BoundingSphere boundingSphere;
 
-        public Torpedo(Vector3 position)
+        public Torpedo(Vector3 pos, Vector3 dir)
         {
             this.model = null;
             this.texture = null;
-            this.position = position;
-            this.velocity = VELOCITY_CONST;
+            this.position = pos;
+            this.direction = dir;
             this.world = Matrix.Identity;
         }
 
@@ -55,10 +55,10 @@ namespace Asteroids
 
         public void Update(GameTime gameTime)
         {
-            setVelocity(VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds);
-            Vector3 newPosition = getWorldMatrix().Forward * getVelocity();
-            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
-            setPosition(getPosition() + newPosition);
+            float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
+            Vector3 velocity = speed * getDirection();
+            Vector3 newPos = getPosition() + velocity;
+            setPosition(newPos);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
@@ -100,14 +100,14 @@ namespace Asteroids
             this.position = position;
         }
 
-        public float getVelocity()
+        public Vector3 getDirection()
         {
-            return this.velocity;
+            return this.direction;
         }
 
-        public void setVelocity(float velocity)
+        public void setDirection(Vector3 direction)
         {
-            this.velocity = velocity;
+            this.direction = direction;
         }
 
         public Matrix getWorldMatrix()
