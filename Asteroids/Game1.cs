@@ -14,6 +14,7 @@ namespace Asteroids
         BasicEffect effect;
         CollisionEngine collisionEngine;
 
+        MouseState originalMouseState;
         Camera camera;
         Skybox skybox;
         Spaceship spaceship;
@@ -36,8 +37,6 @@ namespace Asteroids
             graphics.ApplyChanges();
             Window.Title = "Asteroids 3D";
 
-            Mouse.SetPosition(0, 0);
-
             base.Initialize();
         }
 
@@ -45,6 +44,8 @@ namespace Asteroids
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             device = graphics.GraphicsDevice;
+            Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+            originalMouseState = Mouse.GetState();
             camera = new Camera(device);
             collisionEngine = new CollisionEngine();
             skybox = new Skybox();
@@ -68,8 +69,11 @@ namespace Asteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            spaceship.Update(collisionEngine, gameTime);
+            spaceship.Update(collisionEngine, originalMouseState, gameTime, device);
             camera.Update(spaceship);
+
+            ProcessClick(gameTime);
+
             foreach (Torpedo torp in torpedoes)
             {
                 torp.Update(gameTime);

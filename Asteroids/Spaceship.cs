@@ -56,11 +56,12 @@ namespace Asteroids
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, MouseState originalMouseState, 
+            GameTime gameTime, GraphicsDevice device)
         {
             CheckCollisions(collisionEngine);
             ProcessKeyboard(gameTime);
-            ProcessMouse(gameTime);
+            ProcessMouse(originalMouseState, gameTime, device);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
@@ -218,20 +219,22 @@ namespace Asteroids
             setRotation(rotation);
         }
 
-        private void ProcessMouse(GameTime gameTime)
+        private void ProcessMouse(MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
         {
-            Quaternion rotation = getRotation();
-            float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
-            MouseState mouseState = Mouse.GetState();
-            if (mouseState != null)
+            MouseState currentMouseState = Mouse.GetState();
+            if (currentMouseState != originalMouseState)
             {
+                float xDifference = currentMouseState.X - originalMouseState.X;
+                float yDifference = currentMouseState.Y - originalMouseState.Y;
+                Quaternion rotation = getRotation();
+                float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
                 Quaternion newRotation = Quaternion.CreateFromYawPitchRoll(
-                    mouseState.X * -rotationFactor, 
-                    mouseState.Y * rotationFactor, 
+                    xDifference * -rotationFactor,
+                    yDifference * rotationFactor,
                     0
                 );
 
-                Mouse.SetPosition(0, 0);
+                Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
                 rotation *= newRotation;
                 setRotation(rotation);
             }
