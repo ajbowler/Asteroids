@@ -13,6 +13,7 @@ namespace Asteroids
     {
         public const string MODEL_PATH = "Models/torpedo";
         public const string TEXTURE_PATH = "Models/torp_texture";
+        public const float VELOCITY_CONST = 5000f;
 
         private Model model;
         private Texture2D texture;
@@ -52,14 +53,18 @@ namespace Asteroids
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
         }
 
-        public void Update(GameTime gametime)
+        public void Update(GameTime gameTime)
         {
-            // TODO
+            setVelocity(VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds);
+            Vector3 newPosition = getWorldMatrix().Forward * getVelocity();
+            setWorldMatrix(getWorldMatrix() * Matrix.CreateTranslation(newPosition));
+            setPosition(getPosition() + newPosition);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            setWorldMatrix(Matrix.CreateTranslation(getPosition()) *
+            setWorldMatrix(Matrix.CreateRotationX(MathHelper.Pi) * 
+                Matrix.CreateTranslation(getPosition()) *
                 Matrix.CreateScale(0.5f));
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
 

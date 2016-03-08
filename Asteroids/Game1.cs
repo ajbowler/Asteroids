@@ -70,6 +70,10 @@ namespace Asteroids
 
             spaceship.Update(collisionEngine, gameTime);
             camera.Update(spaceship);
+            foreach (Torpedo torp in torpedoes)
+            {
+                torp.Update(gameTime);
+            }
             base.Update(gameTime);
         }
 
