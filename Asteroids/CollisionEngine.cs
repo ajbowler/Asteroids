@@ -19,10 +19,9 @@ namespace Asteroids
 
         }
 
-        public bool ShipCollidesWithEdge(Spaceship spaceship)
+        public bool CollidesWithEdge(Vector3 position, BoundingSphere boundingSphere)
         {
-            Vector3 position = spaceship.getPosition();
-            float radius = spaceship.getBoundingSphere().Radius;
+            float radius = boundingSphere.Radius;
             return (
                 Math.Abs(position.X) + radius > EDGE_OF_UNIVERSE ||
                 Math.Abs(position.Y) + radius > EDGE_OF_UNIVERSE ||

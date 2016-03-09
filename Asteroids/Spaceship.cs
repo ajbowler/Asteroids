@@ -183,7 +183,7 @@ namespace Asteroids
         private void CheckCollisions(CollisionEngine collisionEngine)
         {
             // Check if the ship hits the edge of the universe
-            if (collisionEngine.ShipCollidesWithEdge(this))
+            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
             {
                 Vector3 pos = getPosition();
                 if (pos.X > 29000)
