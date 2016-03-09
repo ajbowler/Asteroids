@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Asteroids
 {
@@ -43,14 +39,10 @@ namespace Asteroids
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
 
                 foreach (BasicEffect currentEffect in mesh.Effects)
-                {
                     this.texture = currentEffect.Texture;
-                }
 
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
                     meshPart.Effect = effect.Clone();
-                }
             }
 
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
@@ -58,6 +50,7 @@ namespace Asteroids
 
         public void Update(CollisionEngine collisionEngine, GameTime gameTime)
         {
+            CheckCollisions(collisionEngine);
             float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 velocity = speed * getDirection();
             Vector3 newPos = getPosition() + velocity;
@@ -93,10 +86,7 @@ namespace Asteroids
         {
             // Destroy the torpedo if it hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
-            {
-                Console.WriteLine("true");
                 setDestroyed(true);
-            }
         }
 
         public Model getModel()

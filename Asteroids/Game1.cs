@@ -78,12 +78,14 @@ namespace Asteroids
 
             ProcessClick(gameTime);
 
-            foreach (Torpedo torp in torpedoes)
+            List<int> destroyedTorpedoes = new List<int>();
+
+            for (int i = 0; i < torpedoes.Count; i++)
             {
-                if (torp.isDestroyed())
-                    torpedoes.Remove(torp);
+                if (!(torpedoes[i].isDestroyed()))
+                    torpedoes[i].Update(collisionEngine, gameTime);
                 else
-                    torp.Update(collisionEngine, gameTime);
+                    torpedoes.RemoveAt(i);
             }
 
             base.Update(gameTime);
@@ -116,11 +118,8 @@ namespace Asteroids
         private void ProcessClick(GameTime gameTime)
         {
             MouseState mouseState = Mouse.GetState();
-            
             if (mouseState.LeftButton == ButtonState.Pressed)
-            {
                 FireTorpedo();
-            }
         }
     }
 }
