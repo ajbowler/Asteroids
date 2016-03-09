@@ -184,7 +184,22 @@ namespace Asteroids
         {
             // Check if the ship hits the edge of the universe
             if (collisionEngine.ShipCollidesWithEdge(this))
-                this.setVelocity(-getVelocity());
+            {
+                Vector3 pos = getPosition();
+                if (pos.X > 29000)
+                    pos.X = 29000;
+                else if (pos.X < -29000)
+                    pos.X = -29000;
+                else if (pos.Y > 29000)
+                    pos.Y = 29000;
+                else if (pos.Y < -29000)
+                    pos.Y = -29000;
+                else if (pos.Z > 29000)
+                    pos.Z = 29000;
+                else if (pos.Z < -29000)
+                    pos.Z = -29000;
+                setPosition(pos);
+            }
         }
 
         public Model getModel()

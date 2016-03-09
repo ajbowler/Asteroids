@@ -13,7 +13,7 @@ namespace Asteroids
     {
         public const string MODEL_PATH = "Models/torpedo";
         public const string TEXTURE_PATH = "Models/torp_texture";
-        public const float VELOCITY_CONST = 500f;
+        public const float VELOCITY_CONST = 1000f;
 
         private Model model;
         private Texture2D texture;
