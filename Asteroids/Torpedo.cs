@@ -21,6 +21,7 @@ namespace Asteroids
         private Vector3 direction;
         private Matrix world;
         private BoundingSphere boundingSphere;
+        private bool destroyed;
 
         public Torpedo(Vector3 pos, Vector3 dir)
         {
@@ -29,6 +30,8 @@ namespace Asteroids
             this.position = pos;
             this.direction = dir;
             this.world = Matrix.Identity;
+            this.boundingSphere = new BoundingSphere();
+            this.destroyed = false;
         }
 
         public void LoadModel(ContentManager content, BasicEffect effect)
@@ -53,7 +56,7 @@ namespace Asteroids
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
         {
             float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 velocity = speed * getDirection();
@@ -63,6 +66,9 @@ namespace Asteroids
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
+            if (isDestroyed())
+                return;
+
             setWorldMatrix(Matrix.CreateTranslation(getPosition()));
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
 
@@ -83,6 +89,16 @@ namespace Asteroids
             }
         }
 
+        private void CheckCollisions(CollisionEngine collisionEngine)
+        {
+            // Destroy the torpedo if it hits the edge of the universe
+            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            {
+                Console.WriteLine("true");
+                setDestroyed(true);
+            }
+        }
+
         public Model getModel()
         {
             return this.model;
@@ -96,6 +112,7 @@ namespace Asteroids
         public void setPosition(Vector3 position)
         {
             this.position = position;
+            setBoundingSphere(position);
         }
 
         public Vector3 getDirection()
@@ -123,9 +140,19 @@ namespace Asteroids
             return this.boundingSphere;
         }
 
-        public void setBoundingSphere(BoundingSphere boundingSphere)
+        public void setBoundingSphere(Vector3 position)
         {
-            this.boundingSphere = boundingSphere;
+            this.boundingSphere = new BoundingSphere(position, getBoundingSphere().Radius);
+        }
+
+        public bool isDestroyed()
+        {
+            return this.destroyed;
+        }
+
+        public void setDestroyed(bool destroyed)
+        {
+            this.destroyed = destroyed;
         }
     }
 }

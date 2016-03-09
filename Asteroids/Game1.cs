@@ -79,7 +79,12 @@ namespace Asteroids
             ProcessClick(gameTime);
 
             foreach (Torpedo torp in torpedoes)
-                torp.Update(gameTime);
+            {
+                if (torp.isDestroyed())
+                    torpedoes.Remove(torp);
+                else
+                    torp.Update(collisionEngine, gameTime);
+            }
 
             base.Update(gameTime);
         }
