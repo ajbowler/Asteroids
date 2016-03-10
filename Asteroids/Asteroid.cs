@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Asteroids
 {
@@ -37,8 +38,10 @@ namespace Asteroids
             this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
         {
+            CheckCollisions(collisionEngine);
+
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
             setYPR(ypr);
@@ -73,6 +76,23 @@ namespace Asteroids
                     effect.Texture = this.texture;
                 }
                 mesh.Draw();
+            }
+        }
+
+        private void CheckCollisions(CollisionEngine collisionEngine)
+        {
+            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            {
+                float edge = collisionEngine.getEdgeOfUniverse();
+                Vector3 pos = getPosition();
+                if (Math.Abs(pos.X) > edge)
+                    pos.X = -pos.X;
+                else if (Math.Abs(pos.Y) > edge)
+                    pos.Y = -pos.Y;
+                else if (Math.Abs(pos.Z) > edge)
+                    pos.Z = -pos.Z;
+
+                setDirection(-getDirection());
             }
         }
 

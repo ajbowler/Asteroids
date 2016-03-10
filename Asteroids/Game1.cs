@@ -111,7 +111,7 @@ namespace Asteroids
             for (int i = 0; i < asteroids.Count; i++)
             {
                 if (!(asteroids[i].isDestroyed()))
-                    asteroids[i].Update(gameTime);
+                    asteroids[i].Update(collisionEngine, gameTime);
                 else
                     asteroids.RemoveAt(i);
             }
