@@ -189,15 +189,15 @@ namespace Asteroids
                 Vector3 pos = getPosition();
                 if (pos.X > edge)
                     pos.X = edge;
-                else if (pos.X < -edge)
+                if (pos.X < -edge)
                     pos.X = -edge;
-                else if (pos.Y > edge)
+                if (pos.Y > edge)
                     pos.Y = edge;
-                else if (pos.Y < -edge)
+                if (pos.Y < -edge)
                     pos.Y = -edge;
-                else if (pos.Z > edge)
+                if (pos.Z > edge)
                     pos.Z = edge;
-                else if (pos.Z < -edge)
+                if (pos.Z < -edge)
                     pos.Z = -edge;
                 setPosition(pos);
             }
