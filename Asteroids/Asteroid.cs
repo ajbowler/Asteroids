@@ -13,19 +13,19 @@ namespace Asteroids
         private bool destroyed;
         private Model model;
         private Texture2D texture;
-        private Matrix rotation;
+        private Vector3 ypr;
         private float rotationSpeed;
         private Matrix world;
         private Vector3 velocity;
         private Vector3 position;
 
         public Asteroid(int size, Vector3 position, 
-            Matrix rotation, float rotationSpeed, Model model)
+            Vector3 ypr, float rotationSpeed, Model model)
         {
             this.size = size;
             this.destroyed = false;
             this.model = model;
-            this.rotation = rotation;
+            this.ypr = ypr;
             this.rotationSpeed = rotationSpeed;
             this.world = Matrix.Identity;
             this.velocity = Vector3.Zero;
@@ -35,17 +35,27 @@ namespace Asteroids
 
         public void Update(GameTime gameTime)
         {
-            Matrix newRotation = getRotation();
+            Vector3 ypr = getYPR();
+
+            float yaw = ypr.X;
+            float pitch = ypr.Y;
+            float roll = ypr.Z;
+
             float rate = rotationSpeed / gameTime.ElapsedGameTime.Milliseconds;
-            newRotation *= Matrix.CreateFromYawPitchRoll(0, rate, 0);
-            setRotation(newRotation);
+            ypr.X += rate;
+            ypr.Y += rate;
+            ypr.Z += rate;
+            setYPR(ypr);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
+            Vector3 ypr = getYPR();
 
-            setWorldMatrix(getRotation() * 
+            setWorldMatrix(Matrix.CreateRotationX(ypr.X) *
+                Matrix.CreateRotationY(ypr.Y) *
+                Matrix.CreateRotationZ(ypr.Z) * 
                 Matrix.CreateScale(20f) * 
                 Matrix.CreateTranslation(getPosition())
             );
@@ -96,14 +106,14 @@ namespace Asteroids
             this.destroyed = destroyed;
         }
 
-        public Matrix getRotation()
+        public Vector3 getYPR()
         {
-            return this.rotation;
+            return this.ypr;
         }
 
-        public void setRotation(Matrix rotation)
+        public void setYPR(Vector3 ypr)
         {
-            this.rotation = rotation;
+            this.ypr = ypr;
         }
 
         public float getRotationSpeed()

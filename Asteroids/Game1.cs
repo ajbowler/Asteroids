@@ -13,6 +13,7 @@ namespace Asteroids
         SpriteBatch spriteBatch;
         BasicEffect effect;
         CollisionEngine collisionEngine;
+        Random rng = new Random();
 
         MouseState originalMouseState;
         Camera camera;
@@ -21,6 +22,10 @@ namespace Asteroids
         List<Torpedo> torpedoes;
         List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
+        public const float AST_ROT_MIN_SPEED = 0.01f;
+        public const float AST_ROT_MAX_SPEED = 0.05f;
+        public const float AST_ROT_MIN_MAGNITUDE = 0f;
+        public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
         float timer = 0;
 
         public Game1()
@@ -146,9 +151,28 @@ namespace Asteroids
             }
 
             Vector3 position = new Vector3(0, 0, 60f);
-            Matrix rotation = Matrix.CreateFromYawPitchRoll(0, 0.1f, 0);
-            float rotationSpeed = 0.01f;
-            asteroids.Add(new Asteroid(1, position, rotation, rotationSpeed, asteroidModel_1));
+
+            float yaw = getRotationMagnitude();
+            float pitch = getRotationMagnitude();
+            float roll = getRotationMagnitude();
+
+            Vector3 ypr = new Vector3(yaw, pitch, roll);
+            float rotationSpeed = getRotationSpeed();
+            asteroids.Add(new Asteroid(1, position, ypr, rotationSpeed, asteroidModel_1));
+        }
+
+        private float getRotationMagnitude()
+        {
+            return (float) rng.NextDouble() *
+                (AST_ROT_MAX_MAGNITUDE - AST_ROT_MIN_MAGNITUDE) +
+                AST_ROT_MIN_MAGNITUDE;
+        }
+
+        private float getRotationSpeed()
+        {
+            return (float) rng.NextDouble() *
+                (AST_ROT_MAX_SPEED - AST_ROT_MIN_SPEED) +
+                AST_ROT_MIN_SPEED;
         }
     }
 }
