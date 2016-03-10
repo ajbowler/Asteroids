@@ -19,9 +19,10 @@ namespace Asteroids
         private Matrix world;
         private Vector3 direction;
         private Vector3 position;
+        private BoundingSphere boundingSphere;
 
         public Asteroid(int size, Vector3 position, float speed, Vector3 direction, 
-            Vector3 ypr, float rotationSpeed, Model model)
+            Vector3 ypr, float rotationSpeed, Model model, BoundingSphere boundingSphere)
         {
             this.size = size;
             this.destroyed = false;
@@ -33,6 +34,7 @@ namespace Asteroids
             this.direction = direction;
             this.position = position;
             this.texture = null;
+            this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
         public void Update(GameTime gameTime)
@@ -97,6 +99,18 @@ namespace Asteroids
             else if (size == 3 || size == 4)
                 return 600f;
             else return 500f;
+        }
+
+
+        /**
+         * Resets the bounding sphere size after intialization because of 
+         * the scaling of the models. I blame Blender again.
+         */
+        private BoundingSphere ScaleBoundingSphere(BoundingSphere boundingSphere)
+        {
+            float radius = boundingSphere.Radius;
+            radius *= DetermineScale();
+            return new BoundingSphere(this.position, radius);
         }
 
         public int getSize()
@@ -187,6 +201,16 @@ namespace Asteroids
         public void setWorldMatrix(Matrix worldMatrix)
         {
             this.world = worldMatrix;
+        }
+
+        public BoundingSphere getBoundingSphere()
+        {
+            return this.boundingSphere;
+        }
+
+        public void setBoundingSphere(BoundingSphere boundingSphere)
+        {
+            this.boundingSphere = boundingSphere;
         }
     }
 }

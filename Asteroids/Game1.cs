@@ -37,7 +37,8 @@ namespace Asteroids
             "Models/asteroid_5",
             "Models/asteroid_6"
         };
-        public Model[] asteroidModels;  
+        public Model[] asteroidModels;
+        public float[] asteroidBoundingSpheres;
         float timer = 0;
 
         public Game1()
@@ -155,11 +156,13 @@ namespace Asteroids
         {
             asteroids = new List<Asteroid>();
 
-            asteroidModels = LoadAsteroidModels();
+            asteroidModels = LoadAsteroidModelsAndBoundingSpheres();
 
             int size = rng.Next(0, 6);
 
             Vector3 position = GenerateRandomAsteroidPosition();
+            BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBoundingSpheres[size]);
+
             float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
             Vector3 direction = RandomUnitVector();
 
@@ -171,18 +174,25 @@ namespace Asteroids
             float rotationSpeed = RandomFloat(-AST_ROT_SPEED_LIMIT, AST_ROT_SPEED_LIMIT);
             asteroids.Add(
                 new Asteroid(size, position, speed, direction, ypr, 
-                rotationSpeed, asteroidModels[size]));
+                rotationSpeed, asteroidModels[size], boundingSphere));
         }
 
-        private Model[] LoadAsteroidModels()
+        private Model[] LoadAsteroidModelsAndBoundingSpheres()
         {
             asteroidModels = new Model[6];
+            asteroidBoundingSpheres = new float[6];
             for (int i = 0; i < 6; i++)
             {
+                float radius = 0f;
                 asteroidModels[i] = Content.Load<Model>(asteroidModelPaths[i]);
                 foreach (ModelMesh mesh in asteroidModels[i].Meshes)
+                {
+                    radius = Math.Max(radius, mesh.BoundingSphere.Radius);
+
                     foreach (ModelMeshPart meshPart in mesh.MeshParts)
                         meshPart.Effect = effect.Clone();
+                }
+                asteroidBoundingSpheres[i] = radius;
             }
 
             return asteroidModels;
