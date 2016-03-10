@@ -51,7 +51,7 @@ namespace Asteroids
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
             Vector3 ypr = getYPR();
 
-            setWorldMatrix(Matrix.CreateScale(20f) * 
+            setWorldMatrix(Matrix.CreateScale(DetermineScale()) * 
                 Matrix.CreateRotationX(ypr.X) *
                 Matrix.CreateRotationY(ypr.Y) *
                 Matrix.CreateRotationZ(ypr.Z) * 
@@ -81,6 +81,22 @@ namespace Asteroids
             ypr.Y += rate;
             ypr.Z += rate;
             return ypr;
+        }
+
+        /**
+         * This returns a scale based on the model provided. 
+         * They're magic numbers but I suck at Blender.
+         */
+        private float DetermineScale()
+        {
+            int size = getSize();
+            if (size == 0 || size == 1)
+                return 200f;
+            else if (size == 2)
+                return 400f;
+            else if (size == 3 || size == 4)
+                return 600f;
+            else return 500f;
         }
 
         public int getSize()
