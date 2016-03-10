@@ -184,19 +184,21 @@ namespace Asteroids
             // Check if the ship hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
             {
+                float edge = collisionEngine.getEdgeOfUniverse();
+
                 Vector3 pos = getPosition();
-                if (pos.X > 29000)
-                    pos.X = 29000;
-                else if (pos.X < -29000)
-                    pos.X = -29000;
-                else if (pos.Y > 29000)
-                    pos.Y = 29000;
-                else if (pos.Y < -29000)
-                    pos.Y = -29000;
-                else if (pos.Z > 29000)
-                    pos.Z = 29000;
-                else if (pos.Z < -29000)
-                    pos.Z = -29000;
+                if (pos.X > edge)
+                    pos.X = edge;
+                else if (pos.X < -edge)
+                    pos.X = -edge;
+                else if (pos.Y > edge)
+                    pos.Y = edge;
+                else if (pos.Y < -edge)
+                    pos.Y = -edge;
+                else if (pos.Z > edge)
+                    pos.Z = edge;
+                else if (pos.Z < -edge)
+                    pos.Z = -edge;
                 setPosition(pos);
             }
         }

@@ -5,9 +5,9 @@ namespace Asteroids
 {
     class CollisionEngine
     {
-        // The max distance of the skybox is 30K, but this eliminates 
+        // The max distance of the skybox is 15K, but this eliminates 
         // any overlap between the skybox and the models
-        public const float EDGE_OF_UNIVERSE = 29000f;
+        public const float EDGE_OF_UNIVERSE = 14000;
 
         public CollisionEngine()
         {
@@ -22,6 +22,11 @@ namespace Asteroids
                 Math.Abs(position.Y) + radius > EDGE_OF_UNIVERSE ||
                 Math.Abs(position.Z) + radius > EDGE_OF_UNIVERSE
             );
+        }
+
+        public float getEdgeOfUniverse()
+        {
+            return EDGE_OF_UNIVERSE;
         }
     }
 }

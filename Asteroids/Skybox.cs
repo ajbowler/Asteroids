@@ -50,7 +50,7 @@ namespace Asteroids
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = Matrix.CreateScale(1000.0f) * transformation[mesh.ParentBone.Index];
+                    effect.World = Matrix.CreateScale(500.0f) * transformation[mesh.ParentBone.Index];
                     effect.View = view;
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
