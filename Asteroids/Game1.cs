@@ -157,6 +157,7 @@ namespace Asteroids
 
             asteroidModels = LoadAsteroidModels();
 
+            int size = rng.Next(0, 6);
             Vector3 position = new Vector3(0, 0, 60f);
             float speed = getRandomFloat(AST_SPEED_MIN, AST_SPEED_MAX);
             Vector3 direction = getRandomUnitVector();
@@ -167,7 +168,9 @@ namespace Asteroids
             Vector3 ypr = new Vector3(yaw, pitch, roll);
 
             float rotationSpeed = getRandomFloat(AST_ROT_MIN_SPEED, AST_ROT_MAX_SPEED);
-            asteroids.Add(new Asteroid(1, position, speed, direction, ypr, rotationSpeed, asteroidModels[0]));
+            asteroids.Add(
+                new Asteroid(size, position, speed, direction, ypr, 
+                rotationSpeed, asteroidModels[size]));
         }
 
         private Model[] LoadAsteroidModels()

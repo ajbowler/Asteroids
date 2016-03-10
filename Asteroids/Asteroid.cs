@@ -8,7 +8,7 @@ namespace Asteroids
     {
         public const string TEXTURE_PATH = "Models/asteroid_texture";
 
-        // Can be 1-6
+        // Can be 0-5
         private int size;
         private bool destroyed;
         private Model model;
