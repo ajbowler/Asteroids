@@ -28,6 +28,16 @@ namespace Asteroids
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
         public const float AST_SPEED_MIN = -50f;
         public const float AST_SPEED_MAX = 50f;
+        public string[] asteroidModelPaths = new string[6] 
+        {
+            "Models/asteroid_1",
+            "Models/asteroid_2",
+            "Models/asteroid_3",
+            "Models/asteroid_4",
+            "Models/asteroid_5",
+            "Models/asteroid_6"
+        };
+        public Model[] asteroidModels;  
         float timer = 0;
 
         public Game1()
@@ -145,10 +155,7 @@ namespace Asteroids
         {
             asteroids = new List<Asteroid>();
 
-            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_1");
-            foreach (ModelMesh mesh in asteroidModel_1.Meshes)
-                foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                    meshPart.Effect = effect.Clone();
+            asteroidModels = LoadAsteroidModels();
 
             Vector3 position = new Vector3(0, 0, 60f);
             float speed = getRandomFloat(AST_SPEED_MIN, AST_SPEED_MAX);
@@ -160,7 +167,21 @@ namespace Asteroids
             Vector3 ypr = new Vector3(yaw, pitch, roll);
 
             float rotationSpeed = getRandomFloat(AST_ROT_MIN_SPEED, AST_ROT_MAX_SPEED);
-            asteroids.Add(new Asteroid(1, position, speed, direction, ypr, rotationSpeed, asteroidModel_1));
+            asteroids.Add(new Asteroid(1, position, speed, direction, ypr, rotationSpeed, asteroidModels[0]));
+        }
+
+        private Model[] LoadAsteroidModels()
+        {
+            asteroidModels = new Model[6];
+            for (int i = 0; i < 6; i++)
+            {
+                asteroidModels[i] = Content.Load<Model>(asteroidModelPaths[i]);
+                foreach (ModelMesh mesh in asteroidModels[i].Meshes)
+                    foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                        meshPart.Effect = effect.Clone();
+            }
+
+            return asteroidModels;
         }
 
         private float getRandomFloat(float min, float max)
