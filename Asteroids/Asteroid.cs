@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -38,9 +39,14 @@ namespace Asteroids
             this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime, 
+            List<Torpedo> torpedoes, Random rng, Model[] models, float[] boundingSphereRadius)
         {
-            CheckCollisions(collisionEngine);
+            // It's been blown up completely, just return.
+            if (isDestroyed() && getSize() < 2)
+                return;
+
+            CheckCollisions(collisionEngine, torpedoes, rng, models, boundingSphereRadius);
 
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -79,21 +85,48 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine)
+        public void DecreaseSize(Random rng, Model[] models, float[] boundingSphereRadius)
         {
+            // It's been blown up, don't decrease the size.
+            if (getSize() < 2)
+                return;
+
+            int newSize;
+            if (getSize() == 2 || getSize() == 3)
+                newSize = rng.Next(0, 2);
+            else
+                newSize = rng.Next(4, 6);
+            setSize(newSize);
+            setModel(models[newSize]);
+            BoundingSphere sphere = new BoundingSphere(getPosition(), boundingSphereRadius[newSize]);
+            setBoundingSphere(ScaleBoundingSphere(sphere));
+            setDestroyed(false);
+        }
+
+        private void CheckCollisions(CollisionEngine collisionEngine, 
+            List<Torpedo> torpedoes, Random rng, Model[] models, float[] boundingSphereRadius)
+        {
+            // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
             {
                 float edge = collisionEngine.getEdgeOfUniverse();
                 Vector3 pos = getPosition();
+                Vector3 dir = getDirection();
                 if (Math.Abs(pos.X) > edge)
-                    pos.X = -pos.X;
+                    dir.X = -dir.X;
                 else if (Math.Abs(pos.Y) > edge)
-                    pos.Y = -pos.Y;
+                    dir.Y = -dir.Y;
                 else if (Math.Abs(pos.Z) > edge)
-                    pos.Z = -pos.Z;
-
-                setDirection(-getDirection());
+                    dir.Z = -dir.Z;
+                setDirection(dir);
             }
+        
+            foreach (Torpedo torpedo in torpedoes)
+                if (collisionEngine.TorpedoCollidesWithAsteroid(torpedo, this))
+                {
+                    setDestroyed(true);
+                    DecreaseSize(rng, models, boundingSphereRadius);
+                }
         }
 
         private Vector3 UpdateYPR(float rate)
