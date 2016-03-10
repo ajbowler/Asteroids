@@ -44,6 +44,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Asteroid.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CollisionEngine.cs" />
     <Compile Include="Game1.cs" />
