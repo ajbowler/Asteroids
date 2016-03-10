@@ -36,7 +36,7 @@ namespace Asteroids
             this.boundingSphere = new BoundingSphere();
         }
 
-        public void LoadModel(ContentManager content, BasicEffect effect)
+        public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
         {
             float radius = 0f;
             this.model = content.Load<Model>(MODEL_PATH);
@@ -52,6 +52,7 @@ namespace Asteroids
             }
 
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
+            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
         public void Update(Vector3 direction, CollisionEngine collisionEngine, MouseState originalMouseState, 
@@ -68,8 +69,6 @@ namespace Asteroids
                 Matrix.CreateRotationZ(MathHelper.Pi) *
                 Matrix.CreateFromQuaternion(getRotation()) *
                 Matrix.CreateTranslation(getPosition()));
-
-            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
 
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
             this.model.CopyAbsoluteBoneTransformsTo(transformation);

@@ -30,7 +30,7 @@ namespace Asteroids
             this.destroyed = false;
         }
 
-        public void LoadModel(ContentManager content, BasicEffect effect)
+        public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
         {
             float radius = 0f;
             this.model = content.Load<Model>(MODEL_PATH);
@@ -46,6 +46,7 @@ namespace Asteroids
             }
 
             this.boundingSphere = new BoundingSphere(getPosition(), radius);
+            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
         public void Update(CollisionEngine collisionEngine, GameTime gameTime)
@@ -63,8 +64,6 @@ namespace Asteroids
                 return;
 
             setWorldMatrix(Matrix.CreateTranslation(getPosition()));
-            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
-
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
             this.model.CopyAbsoluteBoneTransformsTo(transformation);
             foreach (ModelMesh mesh in this.model.Meshes)

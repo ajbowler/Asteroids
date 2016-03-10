@@ -71,7 +71,7 @@ namespace Asteroids
             skybox = new Skybox();
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
-            spaceship.LoadModel(this.Content, effect);
+            spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
             LoadAsteroids();
         }
@@ -138,7 +138,7 @@ namespace Asteroids
             if (timer == 0)
             {
                 Torpedo torp = new Torpedo(spaceship.getPosition(), spaceship.getWorldMatrix().Up + camera.getDirection());
-                torp.LoadModel(this.Content, effect);
+                torp.LoadModelAndTexture(this.Content, effect);
                 torpedoes.Add(torp);
                 timer = TORPEDO_FIRE_INTERVAL;
             }
