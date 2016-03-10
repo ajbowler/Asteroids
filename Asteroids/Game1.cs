@@ -130,7 +130,7 @@ namespace Asteroids
         {
             asteroids = new List<Asteroid>();
 
-            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_1");
+            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_6");
             foreach (ModelMesh mesh in asteroidModel_1.Meshes)
             {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
