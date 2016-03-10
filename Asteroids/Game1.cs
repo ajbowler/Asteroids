@@ -90,6 +90,14 @@ namespace Asteroids
                     torpedoes.RemoveAt(i);
             }
 
+            for (int i = 0; i < asteroids.Count; i++)
+            {
+                if (!(asteroids[i].isDestroyed()))
+                    asteroids[i].Update(gameTime);
+                else
+                    asteroids.RemoveAt(i);
+            }
+
             base.Update(gameTime);
         }
 
@@ -130,7 +138,7 @@ namespace Asteroids
         {
             asteroids = new List<Asteroid>();
 
-            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_6");
+            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_1");
             foreach (ModelMesh mesh in asteroidModel_1.Meshes)
             {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
@@ -138,7 +146,9 @@ namespace Asteroids
             }
 
             Vector3 position = new Vector3(0, 0, 60f);
-            asteroids.Add(new Asteroid(1, position, asteroidModel_1));
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(0, 0.1f, 0);
+            float rotationSpeed = 0.01f;
+            asteroids.Add(new Asteroid(1, position, rotation, rotationSpeed, asteroidModel_1));
         }
     }
 }

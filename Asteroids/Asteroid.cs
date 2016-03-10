@@ -8,38 +8,47 @@ namespace Asteroids
     {
         public const string TEXTURE_PATH = "Models/asteroid_texture";
 
-        // Can be 1, 2, or 3
+        // Can be 1-6
         private int size;
         private bool destroyed;
         private Model model;
         private Texture2D texture;
         private Matrix rotation;
+        private float rotationSpeed;
         private Matrix world;
         private Vector3 velocity;
         private Vector3 position;
 
-        public Asteroid(int size, Vector3 position, Model model)
+        public Asteroid(int size, Vector3 position, 
+            Matrix rotation, float rotationSpeed, Model model)
         {
             this.size = size;
             this.destroyed = false;
             this.model = model;
-            this.rotation = Matrix.Identity;
+            this.rotation = rotation;
+            this.rotationSpeed = rotationSpeed;
             this.world = Matrix.Identity;
             this.velocity = Vector3.Zero;
             this.position = position;
             this.texture = null;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            // TODO
+            Matrix newRotation = getRotation();
+            float rate = rotationSpeed / gameTime.ElapsedGameTime.Milliseconds;
+            newRotation *= Matrix.CreateFromYawPitchRoll(0, rate, 0);
+            setRotation(newRotation);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
 
-            setWorldMatrix(Matrix.CreateScale(20f) * Matrix.CreateTranslation(getPosition()));
+            setWorldMatrix(getRotation() * 
+                Matrix.CreateScale(20f) * 
+                Matrix.CreateTranslation(getPosition())
+            );
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
             this.model.CopyAbsoluteBoneTransformsTo(transformation);
             foreach (ModelMesh mesh in this.model.Meshes)
@@ -95,6 +104,16 @@ namespace Asteroids
         public void setRotation(Matrix rotation)
         {
             this.rotation = rotation;
+        }
+
+        public float getRotationSpeed()
+        {
+            return this.rotationSpeed;
+        }
+
+        public void setRotationSpeed(float rotationSpeed)
+        {
+            this.rotationSpeed = rotationSpeed;
         }
 
         public Vector3 getVelocity()
