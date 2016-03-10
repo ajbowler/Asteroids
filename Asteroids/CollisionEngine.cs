@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -23,11 +22,6 @@ namespace Asteroids
                 Math.Abs(position.Y) + radius > EDGE_OF_UNIVERSE ||
                 Math.Abs(position.Z) + radius > EDGE_OF_UNIVERSE
             );
-        }
-
-        public bool TorpedoCollidesWithAsteroid(Torpedo torpedo, Asteroid asteroid)
-        {
-            return torpedo.getBoundingSphere().Intersects(asteroid.getBoundingSphere());
         }
 
         public float getEdgeOfUniverse()

@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -50,9 +49,9 @@ namespace Asteroids
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime, List<Asteroid> asteroids)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
         {
-            CheckCollisions(collisionEngine, asteroids);
+            CheckCollisions(collisionEngine);
             float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 velocity = speed * getDirection();
             Vector3 newPos = getPosition() + velocity;
@@ -82,16 +81,11 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, List<Asteroid> asteroids)
+        private void CheckCollisions(CollisionEngine collisionEngine)
         {
             // Destroy the torpedo if it hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
                 setDestroyed(true);
-
-            // Destroy the torpedo if it hits an asteroid
-            foreach (Asteroid asteroid in asteroids)
-                if (collisionEngine.TorpedoCollidesWithAsteroid(this, asteroid))
-                    setDestroyed(true);
         }
 
         public Model getModel()

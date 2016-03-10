@@ -38,7 +38,7 @@ namespace Asteroids
             "Models/asteroid_6"
         };
         public Model[] asteroidModels;
-        public float[] boundingSphereRadius;
+        public float[] asteroidBoundingSpheres;
         float timer = 0;
 
         public Game1()
@@ -98,20 +98,22 @@ namespace Asteroids
 
             ProcessClick(gameTime);
 
+            List<int> destroyedTorpedoes = new List<int>();
+
             for (int i = 0; i < torpedoes.Count; i++)
             {
-                if (torpedoes[i].isDestroyed())
-                    torpedoes.RemoveAt(i);
+                if (!(torpedoes[i].isDestroyed()))
+                    torpedoes[i].Update(collisionEngine, gameTime);
                 else
-                    torpedoes[i].Update(collisionEngine, gameTime, asteroids);
+                    torpedoes.RemoveAt(i);
             }
 
             for (int i = 0; i < asteroids.Count; i++)
             {
-                if (asteroids[i].isDestroyed())
-                    asteroids.RemoveAt(i);
+                if (!(asteroids[i].isDestroyed()))
+                    asteroids[i].Update(collisionEngine, gameTime);
                 else
-                    asteroids[i].Update(collisionEngine, gameTime, torpedoes, rng, asteroidModels, boundingSphereRadius);
+                    asteroids.RemoveAt(i);
             }
 
             base.Update(gameTime);
@@ -159,7 +161,7 @@ namespace Asteroids
             int size = rng.Next(0, 6);
 
             Vector3 position = GenerateRandomAsteroidPosition();
-            BoundingSphere boundingSphere = new BoundingSphere(position, boundingSphereRadius[size]);
+            BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBoundingSpheres[size]);
 
             float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
             Vector3 direction = RandomUnitVector();
@@ -178,7 +180,7 @@ namespace Asteroids
         private Model[] LoadAsteroidModelsAndBoundingSpheres()
         {
             asteroidModels = new Model[6];
-            boundingSphereRadius = new float[6];
+            asteroidBoundingSpheres = new float[6];
             for (int i = 0; i < 6; i++)
             {
                 float radius = 0f;
@@ -190,7 +192,7 @@ namespace Asteroids
                     foreach (ModelMeshPart meshPart in mesh.MeshParts)
                         meshPart.Effect = effect.Clone();
                 }
-                boundingSphereRadius[i] = radius;
+                asteroidBoundingSpheres[i] = radius;
             }
 
             return asteroidModels;
