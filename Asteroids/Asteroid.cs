@@ -15,11 +15,12 @@ namespace Asteroids
         private Texture2D texture;
         private Vector3 ypr;
         private float rotationSpeed;
+        private float speed;
         private Matrix world;
-        private Vector3 velocity;
+        private Vector3 direction;
         private Vector3 position;
 
-        public Asteroid(int size, Vector3 position, 
+        public Asteroid(int size, Vector3 position, float speed, Vector3 direction, 
             Vector3 ypr, float rotationSpeed, Model model)
         {
             this.size = size;
@@ -28,24 +29,21 @@ namespace Asteroids
             this.ypr = ypr;
             this.rotationSpeed = rotationSpeed;
             this.world = Matrix.Identity;
-            this.velocity = Vector3.Zero;
+            this.speed = speed;
+            this.direction = direction;
             this.position = position;
             this.texture = null;
         }
 
         public void Update(GameTime gameTime)
         {
-            Vector3 ypr = getYPR();
-
-            float yaw = ypr.X;
-            float pitch = ypr.Y;
-            float roll = ypr.Z;
-
-            float rate = rotationSpeed / gameTime.ElapsedGameTime.Milliseconds;
-            ypr.X += rate;
-            ypr.Y += rate;
-            ypr.Z += rate;
+            float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
+            Vector3 ypr = UpdateYPR(yprRate);
             setYPR(ypr);
+
+            float speed = (float) getSpeed() / gameTime.ElapsedGameTime.Milliseconds;
+            Vector3 velocity = speed * getDirection();
+            setPosition(getPosition() + velocity);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
@@ -53,10 +51,10 @@ namespace Asteroids
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
             Vector3 ypr = getYPR();
 
-            setWorldMatrix(Matrix.CreateRotationX(ypr.X) *
+            setWorldMatrix(Matrix.CreateScale(20f) * 
+                Matrix.CreateRotationX(ypr.X) *
                 Matrix.CreateRotationY(ypr.Y) *
                 Matrix.CreateRotationZ(ypr.Z) * 
-                Matrix.CreateScale(20f) * 
                 Matrix.CreateTranslation(getPosition())
             );
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
@@ -74,6 +72,15 @@ namespace Asteroids
                 }
                 mesh.Draw();
             }
+        }
+
+        private Vector3 UpdateYPR(float rate)
+        {
+            Vector3 ypr = getYPR();
+            ypr.X += rate;
+            ypr.Y += rate;
+            ypr.Z += rate;
+            return ypr;
         }
 
         public int getSize()
@@ -106,6 +113,26 @@ namespace Asteroids
             this.destroyed = destroyed;
         }
 
+        public float getSpeed()
+        {
+            return this.speed;
+        }
+
+        public void setSpeed(float speed)
+        {
+            this.speed = speed;
+        }
+
+        public Vector3 getDirection()
+        {
+            return this.direction;
+        }
+
+        public void setDirection(Vector3 direction)
+        {
+            this.direction = direction;
+        }
+
         public Vector3 getYPR()
         {
             return this.ypr;
@@ -124,16 +151,6 @@ namespace Asteroids
         public void setRotationSpeed(float rotationSpeed)
         {
             this.rotationSpeed = rotationSpeed;
-        }
-
-        public Vector3 getVelocity()
-        {
-            return this.velocity;
-        }
-
-        public void setVelocity(Vector3 velocity)
-        {
-            this.velocity = velocity;
         }
 
         public Vector3 getPosition()

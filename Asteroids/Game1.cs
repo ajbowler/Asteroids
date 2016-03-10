@@ -22,10 +22,12 @@ namespace Asteroids
         List<Torpedo> torpedoes;
         List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
-        public const float AST_ROT_MIN_SPEED = 0.01f;
+        public const float AST_ROT_MIN_SPEED = -0.05f;
         public const float AST_ROT_MAX_SPEED = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
+        public const float AST_SPEED_MIN = -50f;
+        public const float AST_SPEED_MAX = 50f;
         float timer = 0;
 
         public Game1()
@@ -145,34 +147,33 @@ namespace Asteroids
 
             Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_1");
             foreach (ModelMesh mesh in asteroidModel_1.Meshes)
-            {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                     meshPart.Effect = effect.Clone();
-            }
 
             Vector3 position = new Vector3(0, 0, 60f);
+            float speed = getRandomFloat(AST_SPEED_MIN, AST_SPEED_MAX);
+            Vector3 direction = getRandomUnitVector();
 
-            float yaw = getRotationMagnitude();
-            float pitch = getRotationMagnitude();
-            float roll = getRotationMagnitude();
-
+            float yaw = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+            float pitch = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+            float roll = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
             Vector3 ypr = new Vector3(yaw, pitch, roll);
-            float rotationSpeed = getRotationSpeed();
-            asteroids.Add(new Asteroid(1, position, ypr, rotationSpeed, asteroidModel_1));
+
+            float rotationSpeed = getRandomFloat(AST_ROT_MIN_SPEED, AST_ROT_MAX_SPEED);
+            asteroids.Add(new Asteroid(1, position, speed, direction, ypr, rotationSpeed, asteroidModel_1));
         }
 
-        private float getRotationMagnitude()
+        private float getRandomFloat(float min, float max)
         {
-            return (float) rng.NextDouble() *
-                (AST_ROT_MAX_MAGNITUDE - AST_ROT_MIN_MAGNITUDE) +
-                AST_ROT_MIN_MAGNITUDE;
+            return (float)rng.NextDouble() * (max - min) + min;
         }
 
-        private float getRotationSpeed()
+        private Vector3 getRandomUnitVector()
         {
-            return (float) rng.NextDouble() *
-                (AST_ROT_MAX_SPEED - AST_ROT_MIN_SPEED) +
-                AST_ROT_MIN_SPEED;
+            float x = (float)rng.NextDouble();
+            float y = (float)rng.NextDouble();
+            float z = (float)rng.NextDouble();
+            return new Vector3(x, y, z);
         }
     }
 }

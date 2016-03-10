@@ -119,7 +119,7 @@ namespace Asteroids
             if (speed > VELOCITY_MAX)
                 speed = VELOCITY_MAX;
             setSpeed(speed);
-            Vector3 velocity = calculateVelocityVector(speed, direction);
+            Vector3 velocity = CalculateVelocityVector(speed, direction);
             setVelocity(velocity);
             Vector3 newPosition = getPosition() + velocity;
             setPosition(newPosition);
@@ -134,13 +134,13 @@ namespace Asteroids
             if (speed < 0)
                 speed = 0;
             setSpeed(speed);
-            Vector3 velocity = calculateVelocityVector(speed, direction);
+            Vector3 velocity = CalculateVelocityVector(speed, direction);
             setVelocity(velocity);
             Vector3 newPosition = getPosition() + velocity;
             setPosition(newPosition);
         }
 
-        private Vector3 calculateVelocityVector(float speed, Vector3 direction)
+        private Vector3 CalculateVelocityVector(float speed, Vector3 direction)
         {
             Vector3 velocity = Vector3.Zero + direction;
             velocity.Normalize();
