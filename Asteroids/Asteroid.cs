@@ -81,18 +81,19 @@ namespace Asteroids
 
         private void CheckCollisions(CollisionEngine collisionEngine)
         {
+            // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
             {
                 float edge = collisionEngine.getEdgeOfUniverse();
                 Vector3 pos = getPosition();
+                Vector3 dir = getDirection();
                 if (Math.Abs(pos.X) > edge)
-                    pos.X = -pos.X;
+                    dir.X = -dir.X;
                 else if (Math.Abs(pos.Y) > edge)
-                    pos.Y = -pos.Y;
+                    dir.Y = -dir.Y;
                 else if (Math.Abs(pos.Z) > edge)
-                    pos.Z = -pos.Z;
-
-                setDirection(-getDirection());
+                    dir.Z = -dir.Z;
+                setDirection(dir);
             }
         }
 
