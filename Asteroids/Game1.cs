@@ -22,12 +22,12 @@ namespace Asteroids
         List<Torpedo> torpedoes;
         List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
-        public const float AST_ROT_MIN_SPEED = -0.05f;
-        public const float AST_ROT_MAX_SPEED = 0.05f;
+        public const float AST_ROT_SPEED_LIMIT = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
-        public const float AST_SPEED_MIN = -50f;
-        public const float AST_SPEED_MAX = 50f;
+        public const float AST_SPEED_LIMIT = 50f;
+        public const float AST_SPAWN_LIMIT = -13000f;
+        public const float SHIP_SAFE_SPAWN_ZONE = 4000f;
         public string[] asteroidModelPaths = new string[6] 
         {
             "Models/asteroid_1",
@@ -158,16 +158,17 @@ namespace Asteroids
             asteroidModels = LoadAsteroidModels();
 
             int size = rng.Next(0, 6);
-            Vector3 position = new Vector3(0, 0, 60f);
-            float speed = getRandomFloat(AST_SPEED_MIN, AST_SPEED_MAX);
-            Vector3 direction = getRandomUnitVector();
 
-            float yaw = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
-            float pitch = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
-            float roll = getRandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+            Vector3 position = GenerateRandomAsteroidPosition();
+            float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
+            Vector3 direction = RandomUnitVector();
+
+            float yaw = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+            float pitch = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+            float roll = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
             Vector3 ypr = new Vector3(yaw, pitch, roll);
 
-            float rotationSpeed = getRandomFloat(AST_ROT_MIN_SPEED, AST_ROT_MAX_SPEED);
+            float rotationSpeed = RandomFloat(-AST_ROT_SPEED_LIMIT, AST_ROT_SPEED_LIMIT);
             asteroids.Add(
                 new Asteroid(size, position, speed, direction, ypr, 
                 rotationSpeed, asteroidModels[size]));
@@ -187,17 +188,45 @@ namespace Asteroids
             return asteroidModels;
         }
 
-        private float getRandomFloat(float min, float max)
+        private float RandomFloat(float min, float max)
         {
             return (float)rng.NextDouble() * (max - min) + min;
         }
 
-        private Vector3 getRandomUnitVector()
+        private Vector3 RandomUnitVector()
         {
             float x = (float)rng.NextDouble();
             float y = (float)rng.NextDouble();
             float z = (float)rng.NextDouble();
             return new Vector3(x, y, z);
+        }
+
+        /**
+         * Quick and dirty way of getting a random asteroid position 
+         * far enough away from the ship's starting position.
+         */
+        private Vector3 GenerateRandomAsteroidPosition()
+        {
+            Vector3 position = Vector3.Zero;
+            while (true)
+            {
+                position.X = RandomFloat(-AST_SPAWN_LIMIT, AST_SPAWN_LIMIT);
+                if (Math.Abs(position.X) > SHIP_SAFE_SPAWN_ZONE)
+                    break;
+            }
+            while (true)
+            {
+                position.Y = RandomFloat(-AST_SPAWN_LIMIT, AST_SPAWN_LIMIT);
+                if (Math.Abs(position.Y) > SHIP_SAFE_SPAWN_ZONE)
+                    break;
+            }
+            while (true)
+            {
+                position.Z = RandomFloat(-AST_SPAWN_LIMIT, AST_SPAWN_LIMIT);
+                if (Math.Abs(position.Z) > SHIP_SAFE_SPAWN_ZONE)
+                    break;
+            }
+            return position;
         }
     }
 }
