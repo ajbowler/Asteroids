@@ -19,6 +19,7 @@ namespace Asteroids
         Skybox skybox;
         Spaceship spaceship;
         List<Torpedo> torpedoes;
+        List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
         float timer = 0;
 
@@ -55,6 +56,7 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModel(this.Content, effect);
             torpedoes = new List<Torpedo>();
+            LoadAsteroids();
         }
 
         protected override void UnloadContent()
@@ -100,6 +102,8 @@ namespace Asteroids
             spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
             foreach (Torpedo torp in torpedoes)
                 torp.Draw(this.Content, camera.getView(), camera.getProjection());
+            foreach (Asteroid asteroid in asteroids)
+                asteroid.Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
 
@@ -120,6 +124,21 @@ namespace Asteroids
             MouseState mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
                 FireTorpedo();
+        }
+
+        private void LoadAsteroids()
+        {
+            asteroids = new List<Asteroid>();
+
+            Model asteroidModel_1 = Content.Load<Model>("Models/asteroid_1");
+            foreach (ModelMesh mesh in asteroidModel_1.Meshes)
+            {
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                    meshPart.Effect = effect.Clone();
+            }
+
+            Vector3 position = new Vector3(0, 0, 60f);
+            asteroids.Add(new Asteroid(1, position, asteroidModel_1));
         }
     }
 }
