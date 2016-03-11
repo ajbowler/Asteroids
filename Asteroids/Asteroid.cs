@@ -119,7 +119,7 @@ namespace Asteroids
             int newSize = getSize();
 
             // KABOOM
-            if (newSize == 0 || newSize == 1)
+            if (newSize < 2)
             {
                 setDestroyed(true);
                 return;
