@@ -22,13 +22,14 @@ namespace Asteroids
         List<Torpedo> torpedoes;
         List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
+        public const int ASTEROID_COUNT = 50;
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
         public const float AST_SPEED_LIMIT = 50f;
         public const float AST_SPAWN_LIMIT = 13000f;
         public const float SHIP_SAFE_SPAWN_ZONE = 2000f;
-        public const int ASTEROID_COUNT = 50;
+
         public string[] asteroidModelPaths = new string[6] 
         {
             "Models/asteroid_1",
@@ -94,10 +95,15 @@ namespace Asteroids
             if (timer < 0)
                 timer = 0;
             Vector3 direction = camera.getDirection();
-            spaceship.Update(direction, collisionEngine, originalMouseState, gameTime, device);
-            camera.Update(spaceship);
-
-            ProcessClick(gameTime);
+            if (spaceship != null && spaceship.getLives() > 0)
+            {
+                spaceship.Update(direction, collisionEngine, asteroids,
+                    originalMouseState, gameTime, device);
+                camera.Update(spaceship);
+                ProcessClick(gameTime);
+            }
+            else
+                spaceship = null;
 
             for (int i = 0; i < torpedoes.Count; i++)
             {
@@ -129,7 +135,8 @@ namespace Asteroids
                 torp.Draw(this.Content, camera.getView(), camera.getProjection());
             foreach (Asteroid asteroid in asteroids)
                 asteroid.Draw(this.Content, camera.getView(), camera.getProjection());
-            spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
+            if (spaceship != null)
+                spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
 

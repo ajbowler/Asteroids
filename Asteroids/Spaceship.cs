@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -14,6 +15,7 @@ namespace Asteroids
         public const float ACCEL_CONSTANT = 0.7f;
         public const float DECEL_CONSTANT = 0.4f;
         public const float VELOCITY_MAX = 40f;
+        public const int MAX_LIVES = 3;
 
         private Vector3 position;
         private Quaternion rotation;
@@ -23,10 +25,12 @@ namespace Asteroids
         private Model model;
         private Texture2D texture;
         private BoundingSphere boundingSphere;
+        private bool destroyed;
+        private int lives;
 
         public Spaceship()
         {
-            this.position = new Vector3();
+            this.position = Vector3.Zero;
             this.rotation = Quaternion.Identity;
             this.model = null;
             this.texture = null;
@@ -34,6 +38,8 @@ namespace Asteroids
             this.speed = 0f;
             this.world = Matrix.Identity;
             this.boundingSphere = new BoundingSphere();
+            this.destroyed = false;
+            this.lives = 3;
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
@@ -55,10 +61,26 @@ namespace Asteroids
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
-        public void Update(Vector3 direction, CollisionEngine collisionEngine, MouseState originalMouseState, 
+        public void Update(Vector3 direction, CollisionEngine collisionEngine, 
+            List<Asteroid> asteroids, MouseState originalMouseState, 
             GameTime gameTime, GraphicsDevice device)
         {
-            CheckCollisions(collisionEngine);
+            CheckCollisions(collisionEngine, asteroids);
+
+            if (isDestroyed())
+            {
+                if (getLives() == 0)
+                    return;
+                else
+                {
+                    setPosition(new Vector3(0, 0, 0));
+                    setDestroyed(false);
+                    setSpeed(0f);
+                    setVelocity(Vector3.Zero);
+                    setRotation(Quaternion.Identity);
+                }
+            }
+
             ProcessKeyboard(direction, gameTime);
             ProcessMouse(originalMouseState, gameTime, device);
         }
@@ -179,7 +201,7 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine)
+        private void CheckCollisions(CollisionEngine collisionEngine, List<Asteroid> asteroids)
         {
             // Check if the ship hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -200,6 +222,17 @@ namespace Asteroids
                 if (pos.Z < -edge)
                     pos.Z = -edge;
                 setPosition(pos);
+            }
+
+            // The ship is destroyed if it hits an asteroid
+            foreach (Asteroid asteroid in asteroids)
+            {
+                if (collisionEngine.CollideTwoObjects(
+                    getBoundingSphere(), asteroid.getBoundingSphere()))
+                {
+                    setDestroyed(true);
+                    LoseLife();
+                }
             }
         }
 
@@ -254,6 +287,11 @@ namespace Asteroids
             return this.velocity;
         }
 
+        public void setVelocity(Vector3 velocity)
+        {
+            this.velocity = velocity;
+        }
+
         public float getSpeed()
         {
             return this.speed;
@@ -264,9 +302,26 @@ namespace Asteroids
             this.speed = speed;
         }
 
-        public void setVelocity(Vector3 velocity)
+        public bool isDestroyed()
         {
-            this.velocity = velocity;
+            return this.destroyed;
+        }
+
+        public void setDestroyed(bool destroyed)
+        {
+            this.destroyed = destroyed;
+        }
+
+        public int getLives()
+        {
+            return this.lives;
+        }
+
+        public void LoseLife()
+        {
+            this.lives--;
+            if (this.lives < 0)
+                this.lives = 0;
         }
     }
 }
