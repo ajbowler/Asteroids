@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Asteroids
 {
-    class Sounds
+    class SoundEngine
     {
         private SoundEffectInstance shipEngine;
         private SoundEffectInstance weaponFire;
         private SoundEffectInstance explosion;
 
-        public Sounds(ContentManager content)
+        public SoundEngine(ContentManager content)
         {
             LoadSounds(content);
         }

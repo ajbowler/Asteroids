@@ -13,6 +13,7 @@ namespace Asteroids
         SpriteBatch spriteBatch;
         BasicEffect effect;
         CollisionEngine collisionEngine;
+        SoundEngine soundEngine;
         Random rng = new Random();
 
         MouseState originalMouseState;
