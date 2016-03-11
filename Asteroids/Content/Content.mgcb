@@ -292,3 +292,9 @@
 /processorParam:TextureFormat=DxtCompressed
 /build:Models/asteroid_6.fbx
 
+#begin Sounds/ship_engine.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ship_engine.wav
+
