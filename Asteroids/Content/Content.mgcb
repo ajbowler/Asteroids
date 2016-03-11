@@ -298,3 +298,9 @@
 /processorParam:Quality=Best
 /build:Sounds/ship_engine.wav
 
+#begin Sounds/fire_weapon.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/fire_weapon.wav
+
