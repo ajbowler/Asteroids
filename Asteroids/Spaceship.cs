@@ -240,8 +240,8 @@ namespace Asteroids
             // The ship is destroyed if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (collisionEngine.CollideTwoObjects(
-                    getBoundingSphere(), asteroid.getBoundingSphere()))
+                if (collisionEngine.CollideTwoObjects(soundEngine, getBoundingSphere(), 
+                    asteroid.getBoundingSphere()))
                 {
                     setDestroyed(true);
                     soundEngine.Explosion().Play();

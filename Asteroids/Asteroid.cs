@@ -108,11 +108,11 @@ namespace Asteroids
             // Destroy or decrease the size if it hits a torpedo
             foreach (Torpedo torpedo in torpedoes)
             {
-                if (collisionEngine.CollideTwoObjects
-                    (getBoundingSphere(), torpedo.getBoundingSphere()))
+                if (collisionEngine.CollideTwoObjects(soundEngine, getBoundingSphere(), 
+                    torpedo.getBoundingSphere()))
                 {
                     torpedo.setDestroyed(true);
-                    DecreaseSize(rng, models, sphereRadius, soundEngine);
+                    DecreaseSize(rng, models, sphereRadius);
                     break;
                 }
             }
@@ -122,10 +122,10 @@ namespace Asteroids
             {
                 if (asteroid.getID() != this.getID())
                 {
-                    if (collisionEngine.CollideTwoObjects(
+                    if (collisionEngine.CollideTwoObjects(soundEngine, 
                         asteroid.getBoundingSphere(), this.getBoundingSphere()))
                     {
-                        DecreaseSize(rng, models, sphereRadius, soundEngine);
+                        DecreaseSize(rng, models, sphereRadius);
                         Vector3 exitVector = CalculateExitVector(asteroid);
                         setDirection(exitVector);
                         break;
@@ -134,10 +134,8 @@ namespace Asteroids
             }
         }
 
-        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius, 
-            SoundEngine soundEngine)
+        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius)
         {
-            soundEngine.Explosion().Play();
             int newSize = getSize();
 
             // KABOOM
