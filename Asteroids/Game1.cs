@@ -150,6 +150,7 @@ namespace Asteroids
                 Torpedo torp = new Torpedo(spaceship.getPosition(), spaceship.getWorldMatrix().Up + camera.getDirection());
                 torp.LoadModelAndTexture(this.Content, effect);
                 torpedoes.Add(torp);
+                soundEngine.FireWeapon().Play();
                 timer = TORPEDO_FIRE_INTERVAL;
             }
         }
@@ -160,7 +161,6 @@ namespace Asteroids
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 FireTorpedo();
-                soundEngine.FireWeapon().Play();
             }
         }
 
