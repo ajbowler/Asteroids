@@ -104,10 +104,10 @@ namespace Asteroids
             // Destroy or decrease the size if it hits a torpedo
             foreach (Torpedo torpedo in torpedoes)
             {
-                if (!torpedo.isDestroyed() && 
-                    collisionEngine.CollideTwoObjects
+                if (collisionEngine.CollideTwoObjects
                     (getBoundingSphere(), torpedo.getBoundingSphere()))
                 {
+                    torpedo.setDestroyed(true);
                     DecreaseSize(rng, models, sphereRadius);
                     break;
                 }
