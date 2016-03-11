@@ -125,7 +125,8 @@ namespace Asteroids
                         asteroid.getBoundingSphere(), this.getBoundingSphere()))
                     {
                         DecreaseSize(rng, models, sphereRadius);
-                        // TODO add exit vectors
+                        Vector3 exitVector = CalculateExitVector(asteroid);
+                        setDirection(exitVector);
                         break;
                     }
                 }
@@ -152,6 +153,23 @@ namespace Asteroids
                 BoundingSphere bs = new BoundingSphere(getPosition(), sphereRadius[newSize]);
                 setBoundingSphere(ScaleBoundingSphere(bs));
             }
+        }
+
+        private Vector3 CalculateExitVector(Asteroid asteroid)
+        {
+            Vector3 pos1 = getPosition();
+            Vector3 pos2 = asteroid.getPosition();
+            Vector3 normalize = pos1 - pos2;
+            normalize.Normalize();
+            Vector3 dir1 = getDirection();
+            Vector3 dir2 = asteroid.getDirection();
+            float a1 = Vector3.Dot(dir1, normalize);
+            float a2 = Vector3.Dot(dir2, normalize);
+            float mass1 = (getSize() + 1) / 2;
+            float mass2 = (asteroid.getSize() + 1) / 2;
+            float momentum = (2 * (a1 - a2)) / (mass1 + mass2);
+            Vector3 newDirection = dir1 - momentum * mass2 * normalize;
+            return newDirection;
         }
 
         private Vector3 UpdateYPR(float rate)
