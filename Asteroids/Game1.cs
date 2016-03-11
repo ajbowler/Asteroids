@@ -110,8 +110,8 @@ namespace Asteroids
             for (int i = 0; i < asteroids.Count; i++)
             {
                 if (!(asteroids[i].isDestroyed()))
-                    asteroids[i].Update(collisionEngine, gameTime, torpedoes, rng, 
-                        asteroidModels, asteroidBSRadius);
+                    asteroids[i].Update(collisionEngine, gameTime, torpedoes, 
+                        asteroids, rng, asteroidModels, asteroidBSRadius);
                 else
                     asteroids.RemoveAt(i);
             }

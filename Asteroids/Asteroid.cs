@@ -42,9 +42,10 @@ namespace Asteroids
         }
 
         public void Update(CollisionEngine collisionEngine, GameTime gameTime, 
-            List<Torpedo> torpedoes, Random rng, Model[] models, float[] sphereRadius)
+            List<Torpedo> torpedoes, List<Asteroid> asteroids, Random rng, 
+            Model[] models, float[] sphereRadius)
         {
-            CheckCollisions(collisionEngine, torpedoes, rng, models, sphereRadius);
+            CheckCollisions(collisionEngine, torpedoes, asteroids, rng, models, sphereRadius);
 
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -86,7 +87,7 @@ namespace Asteroids
         }
 
         private void CheckCollisions(CollisionEngine collisionEngine, List<Torpedo> torpedoes, 
-            Random rng, Model[] models, float[] sphereRadius)
+            List<Asteroid> asteroids, Random rng, Model[] models, float[] sphereRadius)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -112,6 +113,21 @@ namespace Asteroids
                     torpedo.setDestroyed(true);
                     DecreaseSize(rng, models, sphereRadius);
                     break;
+                }
+            }
+
+            // Destroy or decrease the size if it hits another asteroid
+            foreach (Asteroid asteroid in asteroids)
+            {
+                if (asteroid.getID() != this.getID())
+                {
+                    if (collisionEngine.CollideTwoObjects(
+                        asteroid.getBoundingSphere(), this.getBoundingSphere()))
+                    {
+                        DecreaseSize(rng, models, sphereRadius);
+                        // TODO add exit vectors
+                        break;
+                    }
                 }
             }
         }
