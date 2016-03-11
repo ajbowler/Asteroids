@@ -72,6 +72,7 @@ namespace Asteroids
             originalMouseState = Mouse.GetState();
             camera = new Camera(device);
             collisionEngine = new CollisionEngine();
+            soundEngine = new SoundEngine(this.Content);
             skybox = new Skybox();
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
@@ -98,8 +99,8 @@ namespace Asteroids
             Vector3 direction = camera.getDirection();
             if (spaceship != null && spaceship.getLives() > 0)
             {
-                spaceship.Update(direction, collisionEngine, asteroids,
-                    originalMouseState, gameTime, device);
+                spaceship.Update(direction, collisionEngine, soundEngine, 
+                    asteroids, originalMouseState, gameTime, device);
                 camera.Update(spaceship);
                 ProcessClick(gameTime);
             }

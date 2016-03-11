@@ -62,7 +62,7 @@ namespace Asteroids
         }
 
         public void Update(Vector3 direction, CollisionEngine collisionEngine, 
-            List<Asteroid> asteroids, MouseState originalMouseState, 
+            SoundEngine soundEngine, List<Asteroid> asteroids, MouseState originalMouseState, 
             GameTime gameTime, GraphicsDevice device)
         {
             CheckCollisions(collisionEngine, asteroids);
@@ -81,7 +81,7 @@ namespace Asteroids
                 }
             }
 
-            ProcessKeyboard(direction, gameTime);
+            ProcessKeyboard(direction, gameTime, soundEngine);
             ProcessMouse(originalMouseState, gameTime, device);
         }
 
@@ -109,22 +109,34 @@ namespace Asteroids
             }
         }
 
-        private void ProcessKeyboard(Vector3 direction, GameTime gameTime)
+        private void ProcessKeyboard(Vector3 direction, GameTime gameTime, SoundEngine soundEngine)
         {
             KeyboardState keys = Keyboard.GetState();
             if (keys.GetPressedKeys().Length > 0)
             {
                 if (keys.IsKeyDown(Keys.W))
+                {
                     Thrust(direction, gameTime);
+                    soundEngine.ShipEngine().Play();
+                }
 
                 if (keys.IsKeyDown(Keys.D))
+                {
                     Roll(gameTime, "right");
+                    soundEngine.ShipEngine().Play();
+                }
 
                 if (keys.IsKeyDown(Keys.A))
+                {
                     Roll(gameTime, "left");
+                    soundEngine.ShipEngine().Play();
+                }
             }
             else
+            {
                 Stop(direction, gameTime);
+                soundEngine.ShipEngine().Stop();
+            }
         }
 
         /**
