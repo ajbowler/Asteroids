@@ -41,11 +41,11 @@ namespace Asteroids
             this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime, 
-            List<Torpedo> torpedoes, List<Asteroid> asteroids, Random rng, 
-            Model[] models, float[] sphereRadius)
+        public void Update(CollisionEngine collisionEngine, SoundEngine soundEngine, 
+            GameTime gameTime, List<Torpedo> torpedoes, List<Asteroid> asteroids, 
+            Random rng, Model[] models, float[] sphereRadius)
         {
-            CheckCollisions(collisionEngine, torpedoes, asteroids, rng, models, sphereRadius);
+            CheckCollisions(collisionEngine, soundEngine, torpedoes, asteroids, rng, models, sphereRadius);
 
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -86,8 +86,9 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, List<Torpedo> torpedoes, 
-            List<Asteroid> asteroids, Random rng, Model[] models, float[] sphereRadius)
+        private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine, 
+            List<Torpedo> torpedoes, List<Asteroid> asteroids, Random rng, Model[] models, 
+            float[] sphereRadius)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -111,7 +112,7 @@ namespace Asteroids
                     (getBoundingSphere(), torpedo.getBoundingSphere()))
                 {
                     torpedo.setDestroyed(true);
-                    DecreaseSize(rng, models, sphereRadius);
+                    DecreaseSize(rng, models, sphereRadius, soundEngine);
                     break;
                 }
             }
@@ -124,7 +125,7 @@ namespace Asteroids
                     if (collisionEngine.CollideTwoObjects(
                         asteroid.getBoundingSphere(), this.getBoundingSphere()))
                     {
-                        DecreaseSize(rng, models, sphereRadius);
+                        DecreaseSize(rng, models, sphereRadius, soundEngine);
                         Vector3 exitVector = CalculateExitVector(asteroid);
                         setDirection(exitVector);
                         break;
@@ -133,8 +134,10 @@ namespace Asteroids
             }
         }
 
-        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius)
+        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius, 
+            SoundEngine soundEngine)
         {
+            soundEngine.Explosion().Play();
             int newSize = getSize();
 
             // KABOOM
@@ -163,11 +166,11 @@ namespace Asteroids
             normalize.Normalize();
             Vector3 dir1 = getDirection();
             Vector3 dir2 = asteroid.getDirection();
-            float a1 = Vector3.Dot(dir1, normalize);
-            float a2 = Vector3.Dot(dir2, normalize);
+            float dot1 = Vector3.Dot(dir1, normalize);
+            float dot2 = Vector3.Dot(dir2, normalize);
             float mass1 = (getSize() + 1) / 2;
             float mass2 = (asteroid.getSize() + 1) / 2;
-            float momentum = (2 * (a1 - a2)) / (mass1 + mass2);
+            float momentum = (2 * (dot1 - dot2)) / (mass1 + mass2);
             Vector3 newDirection = dir1 - momentum * mass2 * normalize;
             return newDirection;
         }
