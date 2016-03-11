@@ -12,6 +12,7 @@ namespace Asteroids
 
         // Can be 0-5
         private int size;
+        private int id;
         private bool destroyed;
         private Model model;
         private Texture2D texture;
@@ -23,10 +24,11 @@ namespace Asteroids
         private Vector3 position;
         private BoundingSphere boundingSphere;
 
-        public Asteroid(int size, Vector3 position, float speed, Vector3 direction, 
+        public Asteroid(int size, int id, Vector3 position, float speed, Vector3 direction, 
             Vector3 ypr, float rotationSpeed, Model model, BoundingSphere boundingSphere)
         {
             this.size = size;
+            this.id = id;
             this.destroyed = false;
             this.model = model;
             this.ypr = ypr;
@@ -181,6 +183,16 @@ namespace Asteroids
         public void setSize(int size)
         {
             this.size = size;
+        }
+
+        public int getID()
+        {
+            return this.id;
+        }
+
+        public void setID(int id)
+        {
+            this.id = id;
         }
 
         public Model getModel()

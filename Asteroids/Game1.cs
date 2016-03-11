@@ -173,7 +173,7 @@ namespace Asteroids
                 float rotationSpeed = RandomFloat(-AST_ROT_SPEED_LIMIT, AST_ROT_SPEED_LIMIT);
 
                 asteroids.Add(
-                    new Asteroid(size, position, speed, direction, ypr,
+                    new Asteroid(size, i, position, speed, direction, ypr,
                     rotationSpeed, asteroidModels[size], boundingSphere));
             }
         }
