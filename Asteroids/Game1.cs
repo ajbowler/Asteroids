@@ -158,7 +158,10 @@ namespace Asteroids
         {
             MouseState mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
+            {
                 FireTorpedo();
+                soundEngine.FireWeapon().Play();
+            }
         }
 
         private void LoadAsteroids()
