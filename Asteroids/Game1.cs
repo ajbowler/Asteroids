@@ -38,7 +38,7 @@ namespace Asteroids
             "Models/asteroid_6"
         };
         public Model[] asteroidModels;
-        public float[] asteroidBoundingSpheres;
+        public float[] asteroidBSRadius;
         float timer = 0;
 
         public Game1()
@@ -109,7 +109,8 @@ namespace Asteroids
             for (int i = 0; i < asteroids.Count; i++)
             {
                 if (!(asteroids[i].isDestroyed()))
-                    asteroids[i].Update(collisionEngine, gameTime, torpedoes);
+                    asteroids[i].Update(collisionEngine, gameTime, torpedoes, rng, 
+                        asteroidModels, asteroidBSRadius);
                 else
                     asteroids.RemoveAt(i);
             }
@@ -159,7 +160,7 @@ namespace Asteroids
             int size = rng.Next(0, 6);
 
             Vector3 position = GenerateRandomAsteroidPosition();
-            BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBoundingSpheres[size]);
+            BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBSRadius[size]);
 
             float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
             Vector3 direction = RandomUnitVector();
@@ -178,7 +179,7 @@ namespace Asteroids
         private Model[] LoadAsteroidModelsAndBoundingSpheres()
         {
             asteroidModels = new Model[6];
-            asteroidBoundingSpheres = new float[6];
+            asteroidBSRadius = new float[6];
             for (int i = 0; i < 6; i++)
             {
                 float radius = 0f;
@@ -190,7 +191,7 @@ namespace Asteroids
                     foreach (ModelMeshPart meshPart in mesh.MeshParts)
                         meshPart.Effect = effect.Clone();
                 }
-                asteroidBoundingSpheres[i] = radius;
+                asteroidBSRadius[i] = radius;
             }
 
             return asteroidModels;

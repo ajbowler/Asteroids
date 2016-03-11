@@ -39,9 +39,10 @@ namespace Asteroids
             this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime, List<Torpedo> torpedoes)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime, 
+            List<Torpedo> torpedoes, Random rng, Model[] models, float[] sphereRadius)
         {
-            CheckCollisions(collisionEngine, torpedoes);
+            CheckCollisions(collisionEngine, torpedoes, rng, models, sphereRadius);
 
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -82,7 +83,8 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, List<Torpedo> torpedoes)
+        private void CheckCollisions(CollisionEngine collisionEngine, List<Torpedo> torpedoes, 
+            Random rng, Model[] models, float[] sphereRadius)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -102,11 +104,35 @@ namespace Asteroids
             // Destroy or decrease the size if it hits a torpedo
             foreach (Torpedo torpedo in torpedoes)
             {
-                if (collisionEngine.CollideTwoObjects(getBoundingSphere(), torpedo.getBoundingSphere()))
+                if (!torpedo.isDestroyed() && 
+                    collisionEngine.CollideTwoObjects
+                    (getBoundingSphere(), torpedo.getBoundingSphere()))
                 {
-                    setDestroyed(true);
+                    DecreaseSize(rng, models, sphereRadius);
                     break;
                 }
+            }
+        }
+
+        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius)
+        {
+            int newSize = getSize();
+
+            // KABOOM
+            if (newSize == 0 || newSize == 1)
+            {
+                setDestroyed(true);
+                return;
+            }
+            else
+            {
+                newSize -= 2;
+
+                // Reinitialize properties
+                setModel(models[newSize]);
+                setSize(newSize);
+                BoundingSphere bs = new BoundingSphere(getPosition(), sphereRadius[newSize]);
+                setBoundingSphere(ScaleBoundingSphere(bs));
             }
         }
 
