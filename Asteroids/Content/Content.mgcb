@@ -304,3 +304,9 @@
 /processorParam:Quality=Best
 /build:Sounds/fire_weapon.wav
 
+#begin Sounds/explosion.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/explosion.wav
+

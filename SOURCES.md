@@ -7,3 +7,5 @@ Karen Doty for the Spaceship model and texture
 [Ship Engine Sound](https://www.freesound.org/people/Tomlija/sounds/101278/)
 
 Star Wars for the weapon firing sound
+
+[Explosion Sound](https://www.freesound.org/people/Nbs%20Dark/sounds/94185/)
