@@ -49,6 +49,8 @@ namespace Asteroids
             float speed = (float) getSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 velocity = speed * getDirection();
             setPosition(getPosition() + velocity);
+            BoundingSphere bs = new BoundingSphere(getPosition(), getBoundingSphere().Radius);
+            setBoundingSphere(bs);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
