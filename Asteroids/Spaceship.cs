@@ -65,7 +65,7 @@ namespace Asteroids
             SoundEngine soundEngine, List<Asteroid> asteroids, MouseState originalMouseState, 
             GameTime gameTime, GraphicsDevice device)
         {
-            CheckCollisions(collisionEngine, asteroids);
+            CheckCollisions(collisionEngine, soundEngine, asteroids);
 
             if (isDestroyed())
             {
@@ -213,7 +213,8 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, List<Asteroid> asteroids)
+        private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine,
+            List<Asteroid> asteroids)
         {
             // Check if the ship hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -243,6 +244,7 @@ namespace Asteroids
                     getBoundingSphere(), asteroid.getBoundingSphere()))
                 {
                     setDestroyed(true);
+                    soundEngine.Explosion().Play();
                     LoseLife();
                 }
             }
