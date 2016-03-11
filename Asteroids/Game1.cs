@@ -110,7 +110,7 @@ namespace Asteroids
             for (int i = 0; i < torpedoes.Count; i++)
             {
                 if (!(torpedoes[i].isDestroyed()))
-                    torpedoes[i].Update(collisionEngine, gameTime, asteroids);
+                    torpedoes[i].Update(collisionEngine, soundEngine, gameTime, asteroids);
                 else
                     torpedoes.RemoveAt(i);
             }

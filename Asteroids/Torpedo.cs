@@ -50,9 +50,10 @@ namespace Asteroids
             this.texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime, List<Asteroid> asteroids)
+        public void Update(CollisionEngine collisionEngine, SoundEngine soundEngine,
+            GameTime gameTime, List<Asteroid> asteroids)
         {
-            CheckCollisions(collisionEngine, asteroids);
+            CheckCollisions(collisionEngine, soundEngine, asteroids);
             float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 velocity = speed * getDirection();
             Vector3 newPos = getPosition() + velocity;
@@ -82,11 +83,15 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, List<Asteroid> asteroids)
+        private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine,
+            List<Asteroid> asteroids)
         {
             // Destroy the torpedo if it hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            {
+                soundEngine.Explosion().Play();
                 setDestroyed(true);
+            }
 
             // Destroy the torpedo if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
