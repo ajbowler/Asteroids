@@ -14,6 +14,11 @@ namespace Asteroids
 
         }
 
+        public bool CollideTwoObjects(BoundingSphere bs1, BoundingSphere bs2)
+        {
+            return bs1.Intersects(bs2);
+        }
+
         public bool CollidesWithEdge(Vector3 position, BoundingSphere boundingSphere)
         {
             float radius = boundingSphere.Radius;
