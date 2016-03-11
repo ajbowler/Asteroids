@@ -98,8 +98,6 @@ namespace Asteroids
 
             ProcessClick(gameTime);
 
-            List<int> destroyedTorpedoes = new List<int>();
-
             for (int i = 0; i < torpedoes.Count; i++)
             {
                 if (!(torpedoes[i].isDestroyed()))
@@ -111,7 +109,7 @@ namespace Asteroids
             for (int i = 0; i < asteroids.Count; i++)
             {
                 if (!(asteroids[i].isDestroyed()))
-                    asteroids[i].Update(collisionEngine, gameTime);
+                    asteroids[i].Update(collisionEngine, gameTime, torpedoes);
                 else
                     asteroids.RemoveAt(i);
             }
@@ -125,11 +123,11 @@ namespace Asteroids
             effect.Projection = camera.getProjection();
             effect.View = camera.getView();
             skybox.Draw(device, camera.getView(), camera.getProjection());
-            spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
             foreach (Torpedo torp in torpedoes)
                 torp.Draw(this.Content, camera.getView(), camera.getProjection());
             foreach (Asteroid asteroid in asteroids)
                 asteroid.Draw(this.Content, camera.getView(), camera.getProjection());
+            spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
             base.Draw(gameTime);
         }
 

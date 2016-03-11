@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace Asteroids
 {
@@ -38,9 +39,9 @@ namespace Asteroids
             this.boundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
-        public void Update(CollisionEngine collisionEngine, GameTime gameTime)
+        public void Update(CollisionEngine collisionEngine, GameTime gameTime, List<Torpedo> torpedoes)
         {
-            CheckCollisions(collisionEngine);
+            CheckCollisions(collisionEngine, torpedoes);
 
             float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -81,7 +82,7 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine)
+        private void CheckCollisions(CollisionEngine collisionEngine, List<Torpedo> torpedoes)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
             if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
@@ -96,6 +97,16 @@ namespace Asteroids
                 else if (Math.Abs(pos.Z) > edge)
                     dir.Z = -dir.Z;
                 setDirection(dir);
+            }
+
+            // Destroy or decrease the size if it hits a torpedo
+            foreach (Torpedo torpedo in torpedoes)
+            {
+                if (collisionEngine.CollideTwoObjects(getBoundingSphere(), torpedo.getBoundingSphere()))
+                {
+                    setDestroyed(true);
+                    break;
+                }
             }
         }
 
