@@ -27,7 +27,8 @@ namespace Asteroids
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
         public const float AST_SPEED_LIMIT = 50f;
         public const float AST_SPAWN_LIMIT = 13000f;
-        public const float SHIP_SAFE_SPAWN_ZONE = 4000f;
+        public const float SHIP_SAFE_SPAWN_ZONE = 2000f;
+        public const int ASTEROID_COUNT = 50;
         public string[] asteroidModelPaths = new string[6] 
         {
             "Models/asteroid_1",
@@ -157,23 +158,24 @@ namespace Asteroids
 
             asteroidModels = LoadAsteroidModelsAndBoundingSpheres();
 
-            int size = rng.Next(0, 6);
+            for (int i = 0; i < ASTEROID_COUNT; i++)
+            {
+                int size = rng.Next(0, 6);
+                Vector3 position = GenerateRandomAsteroidPosition();
+                BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBSRadius[size]);
+                float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
+                Vector3 direction = RandomUnitVector();
 
-            Vector3 position = GenerateRandomAsteroidPosition();
-            BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBSRadius[size]);
+                float yaw = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+                float pitch = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+                float roll = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
+                Vector3 ypr = new Vector3(yaw, pitch, roll);
+                float rotationSpeed = RandomFloat(-AST_ROT_SPEED_LIMIT, AST_ROT_SPEED_LIMIT);
 
-            float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
-            Vector3 direction = RandomUnitVector();
-
-            float yaw = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
-            float pitch = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
-            float roll = RandomFloat(AST_ROT_MIN_MAGNITUDE, AST_ROT_MAX_MAGNITUDE);
-            Vector3 ypr = new Vector3(yaw, pitch, roll);
-
-            float rotationSpeed = RandomFloat(-AST_ROT_SPEED_LIMIT, AST_ROT_SPEED_LIMIT);
-            asteroids.Add(
-                new Asteroid(size, position, speed, direction, ypr, 
-                rotationSpeed, asteroidModels[size], boundingSphere));
+                asteroids.Add(
+                    new Asteroid(size, position, speed, direction, ypr,
+                    rotationSpeed, asteroidModels[size], boundingSphere));
+            }
         }
 
         private Model[] LoadAsteroidModelsAndBoundingSpheres()
