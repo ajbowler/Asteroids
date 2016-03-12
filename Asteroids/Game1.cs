@@ -23,6 +23,7 @@ namespace Asteroids
         List<Torpedo> torpedoes;
         List<ExplosionParticle> explosionParticles;
         List<Asteroid> asteroids;
+        Texture2D lifeTexture;
         public const int TORPEDO_FIRE_INTERVAL = 2;
         public const int ASTEROID_COUNT = 50;
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
@@ -72,6 +73,7 @@ namespace Asteroids
             Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
             originalMouseState = Mouse.GetState();
             camera = new Camera(device);
+            lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
             collisionEngine = new CollisionEngine();
             soundEngine = new SoundEngine(this.Content);
             skybox = new Skybox();
@@ -140,7 +142,10 @@ namespace Asteroids
             foreach (Asteroid asteroid in asteroids)
                 asteroid.Draw(this.Content, camera.getView(), camera.getProjection());
             if (spaceship != null)
+            {
                 spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
+                DrawLives(spaceship.getLives());
+            }
             base.Draw(gameTime);
         }
 
@@ -252,6 +257,38 @@ namespace Asteroids
                     break;
             }
             return position;
+        }
+
+        /**
+         * Draws the current number of lives. Image is 95x108 pixels.
+         */
+        private void DrawLives(int lives)
+        {
+            int textureWidth = lifeTexture.Width;
+            int textureHeight = lifeTexture.Height;
+            if (lives >= 1)
+            {
+                Rectangle rect = new Rectangle(0, 0, textureWidth, textureHeight);
+                spriteBatch.Begin();
+                spriteBatch.Draw(lifeTexture, rect, Color.White);
+                spriteBatch.End();
+            }
+
+            if (lives >= 2)
+            {
+                Rectangle rect = new Rectangle(textureWidth, 0, textureWidth, textureHeight);
+                spriteBatch.Begin();
+                spriteBatch.Draw(lifeTexture, rect, Color.White);
+                spriteBatch.End();
+            }
+
+            if (lives == 3)
+            {
+                Rectangle rect = new Rectangle(textureWidth * 2, 0, textureWidth, textureHeight);
+                spriteBatch.Begin();
+                spriteBatch.Draw(lifeTexture, rect, Color.White);
+                spriteBatch.End();
+            }
         }
     }
 }
