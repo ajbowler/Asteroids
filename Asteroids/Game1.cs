@@ -266,25 +266,9 @@ namespace Asteroids
         {
             int textureWidth = lifeTexture.Width;
             int textureHeight = lifeTexture.Height;
-            if (lives >= 1)
+            for (int i = lives - 1; i >= 0; i--)
             {
-                Rectangle rect = new Rectangle(0, 0, textureWidth, textureHeight);
-                spriteBatch.Begin();
-                spriteBatch.Draw(lifeTexture, rect, Color.White);
-                spriteBatch.End();
-            }
-
-            if (lives >= 2)
-            {
-                Rectangle rect = new Rectangle(textureWidth, 0, textureWidth, textureHeight);
-                spriteBatch.Begin();
-                spriteBatch.Draw(lifeTexture, rect, Color.White);
-                spriteBatch.End();
-            }
-
-            if (lives == 3)
-            {
-                Rectangle rect = new Rectangle(textureWidth * 2, 0, textureWidth, textureHeight);
+                Rectangle rect = new Rectangle(textureWidth * i, 0, textureWidth, textureHeight);
                 spriteBatch.Begin();
                 spriteBatch.Draw(lifeTexture, rect, Color.White);
                 spriteBatch.End();
