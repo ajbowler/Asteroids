@@ -84,5 +84,10 @@ namespace Asteroids
         {
             return Matrix.Invert(this.view).Forward;
         }
+
+        public Vector3 getUp()
+        {
+            return new Vector3(0, 1, 0);
+        }
     }
 }
