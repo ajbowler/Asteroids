@@ -21,6 +21,7 @@ namespace Asteroids
         Skybox skybox;
         Spaceship spaceship;
         List<Torpedo> torpedoes;
+        List<ExplosionParticle> explosionParticles;
         List<Asteroid> asteroids;
         public const int TORPEDO_FIRE_INTERVAL = 2;
         public const int ASTEROID_COUNT = 50;
@@ -78,6 +79,7 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
+            explosionParticles = new List<ExplosionParticle>();
             LoadAsteroids();
         }
 
