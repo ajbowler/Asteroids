@@ -56,9 +56,9 @@ namespace Asteroids
             effect = new BasicEffect(GraphicsDevice);
             effect.LightingEnabled = true;
 
-            graphics.PreferredBackBufferWidth = 1024;
-            graphics.PreferredBackBufferHeight = 768;
-            graphics.IsFullScreen = false;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
+            graphics.IsFullScreen = true;
             graphics.ApplyChanges();
             Window.Title = "Asteroids 3D";
 
