@@ -334,3 +334,9 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/spaceship_sprite.png
 
+#begin Fonts/Courier New.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Courier New.spritefont
+

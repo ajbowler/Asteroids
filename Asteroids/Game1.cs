@@ -24,6 +24,8 @@ namespace Asteroids
         List<ExplosionParticle> explosionParticles;
         List<Asteroid> asteroids;
         Texture2D lifeTexture;
+        SpriteFont timeFont;
+        string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
         public const int ASTEROID_COUNT = 50;
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
@@ -74,6 +76,7 @@ namespace Asteroids
             originalMouseState = Mouse.GetState();
             camera = new Camera(device);
             lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
+            timeFont = Content.Load<SpriteFont>("Fonts/Courier New");
             collisionEngine = new CollisionEngine();
             soundEngine = new SoundEngine(this.Content);
             skybox = new Skybox();
@@ -96,6 +99,9 @@ namespace Asteroids
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            int totalTime = (int) gameTime.TotalGameTime.TotalSeconds;
+            gameClock = totalTime.ToString();
 
             timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
             if (timer < 0)
@@ -146,6 +152,7 @@ namespace Asteroids
                 spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
                 DrawLives(spaceship.getLives());
             }
+            DrawTime(gameClock);
             base.Draw(gameTime);
         }
 
@@ -273,6 +280,15 @@ namespace Asteroids
                 spriteBatch.Draw(lifeTexture, rect, Color.White);
                 spriteBatch.End();
             }
+        }
+
+        private void DrawTime(string gameClock)
+        {
+            string time = gameClock.ToString();
+            spriteBatch.Begin();
+            Vector2 position = new Vector2(device.Viewport.Width - timeFont.MeasureString(time).X, 0);
+            spriteBatch.DrawString(timeFont, time, position, Color.Gold);
+            spriteBatch.End();
         }
     }
 }
