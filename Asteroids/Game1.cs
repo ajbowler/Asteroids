@@ -21,9 +21,10 @@ namespace Asteroids
         Skybox skybox;
         Spaceship spaceship;
         List<Torpedo> torpedoes;
-        List<ExplosionParticle> explosionParticles;
+        List<ExplosionBillboard> explosionBillboards;
         List<Asteroid> asteroids;
         Texture2D lifeTexture;
+        Texture2D explosionParticle;
         SpriteFont timeFont;
         string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
@@ -76,6 +77,7 @@ namespace Asteroids
             originalMouseState = Mouse.GetState();
             camera = new Camera(device);
             lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
+            explosionParticle = this.Content.Load<Texture2D>("Sprites/explosion_particle");
             timeFont = Content.Load<SpriteFont>("Fonts/Courier New");
             collisionEngine = new CollisionEngine();
             soundEngine = new SoundEngine(this.Content);
@@ -84,7 +86,7 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
-            explosionParticles = new List<ExplosionParticle>();
+            explosionBillboards = new List<ExplosionBillboard>();
             LoadAsteroids();
         }
 

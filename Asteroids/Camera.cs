@@ -62,7 +62,12 @@ namespace Asteroids
 
         public Vector3 GetUp()
         {
-            return new Vector3(0, 1, 0);
+            return Matrix.Invert(this.View).Up;
+        }
+
+        public Vector3 GetRight()
+        {
+            return Vector3.Cross(GetDirection(), GetUp());
         }
     }
 }
