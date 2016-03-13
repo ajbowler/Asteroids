@@ -10,9 +10,9 @@ namespace Asteroids
 {
     class SoundEngine
     {
-        private SoundEffectInstance shipEngine;
-        private SoundEffectInstance weaponFire;
-        private SoundEffectInstance explosion;
+        public SoundEffectInstance ShipEngine;
+        public SoundEffectInstance WeaponFire;
+        public SoundEffectInstance Explosion;
 
         public SoundEngine(ContentManager content)
         {
@@ -24,25 +24,10 @@ namespace Asteroids
             SoundEffect e1 = content.Load<SoundEffect>("Sounds/ship_engine");
             SoundEffect e2 = content.Load<SoundEffect>("Sounds/fire_weapon");
             SoundEffect e3 = content.Load<SoundEffect>("Sounds/explosion");
-            this.shipEngine = e1.CreateInstance();
-            this.shipEngine.IsLooped = true;
-            this.weaponFire = e2.CreateInstance();
-            this.explosion = e3.CreateInstance();
-        }
-
-        public SoundEffectInstance ShipEngine()
-        {
-            return this.shipEngine;
-        }
-
-        public SoundEffectInstance FireWeapon()
-        {
-            return this.weaponFire;
-        }
-
-        public SoundEffectInstance Explosion()
-        {
-            return this.explosion;
+            this.ShipEngine = e1.CreateInstance();
+            this.ShipEngine.IsLooped = true;
+            this.WeaponFire = e2.CreateInstance();
+            this.Explosion = e3.CreateInstance();
         }
     }
 }

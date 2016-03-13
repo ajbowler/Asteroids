@@ -106,8 +106,8 @@ namespace Asteroids
             timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
             if (timer < 0)
                 timer = 0;
-            Vector3 direction = camera.getDirection();
-            if (spaceship != null && spaceship.getLives() > 0)
+            Vector3 direction = camera.GetDirection();
+            if (spaceship != null && spaceship.Lives > 0)
             {
                 spaceship.Update(direction, collisionEngine, soundEngine, 
                     asteroids, originalMouseState, gameTime, device);
@@ -119,7 +119,7 @@ namespace Asteroids
 
             for (int i = 0; i < torpedoes.Count; i++)
             {
-                if (!(torpedoes[i].isDestroyed()))
+                if (!(torpedoes[i].Destroyed))
                     torpedoes[i].Update(collisionEngine, soundEngine, gameTime, asteroids);
                 else
                     torpedoes.RemoveAt(i);
@@ -127,7 +127,7 @@ namespace Asteroids
 
             for (int i = 0; i < asteroids.Count; i++)
             {
-                if (!(asteroids[i].isDestroyed()))
+                if (!(asteroids[i].Destroyed))
                     asteroids[i].Update(collisionEngine, soundEngine, gameTime, torpedoes, 
                         asteroids, rng, asteroidModels, asteroidBSRadius);
                 else
@@ -140,17 +140,17 @@ namespace Asteroids
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            effect.Projection = camera.getProjection();
-            effect.View = camera.getView();
-            skybox.Draw(device, camera.getView(), camera.getProjection());
+            effect.Projection = camera.Projection;
+            effect.View = camera.View;
+            skybox.Draw(device, camera.View, camera.Projection);
             foreach (Torpedo torp in torpedoes)
-                torp.Draw(this.Content, camera.getView(), camera.getProjection());
+                torp.Draw(this.Content, camera.View, camera.Projection);
             foreach (Asteroid asteroid in asteroids)
-                asteroid.Draw(this.Content, camera.getView(), camera.getProjection());
+                asteroid.Draw(this.Content, camera.View, camera.Projection);
             if (spaceship != null)
             {
-                spaceship.Draw(this.Content, camera.getView(), camera.getProjection());
-                DrawLives(spaceship.getLives());
+                spaceship.Draw(this.Content, camera.View, camera.Projection);
+                DrawLives(spaceship.Lives);
             }
             DrawTime(gameClock);
             base.Draw(gameTime);
@@ -161,10 +161,10 @@ namespace Asteroids
             // Do not fire until the 2 second interval has passed
             if (timer == 0)
             {
-                Torpedo torp = new Torpedo(spaceship.getPosition(), spaceship.getWorldMatrix().Up + camera.getDirection());
+                Torpedo torp = new Torpedo(spaceship.Position, spaceship.World.Up + camera.GetDirection());
                 torp.LoadModelAndTexture(this.Content, effect);
                 torpedoes.Add(torp);
-                soundEngine.FireWeapon().Play();
+                soundEngine.WeaponFire.Play();
                 timer = TORPEDO_FIRE_INTERVAL;
             }
         }

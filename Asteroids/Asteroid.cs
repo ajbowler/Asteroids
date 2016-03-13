@@ -11,34 +11,34 @@ namespace Asteroids
         public const string TEXTURE_PATH = "Models/asteroid_texture";
 
         // Can be 0-5
-        private int size;
-        private int id;
-        private bool destroyed;
-        private Model model;
-        private Texture2D texture;
-        private Vector3 ypr;
-        private float rotationSpeed;
-        private float speed;
-        private Matrix world;
-        private Vector3 direction;
-        private Vector3 position;
-        private BoundingSphere boundingSphere;
+        public int Size { get; set; }
+        public int ID { get; set; }
+        public bool Destroyed { get; set; }
+        public Model Model { get; set; }
+        public Texture2D Texture { get; set; }
+        public Vector3 YPR { get; set; }
+        public float RotationSpeed { get; set; }
+        public float Speed { get; set; }
+        public Matrix World { get; set; }
+        public Vector3 Direction { get; set; }
+        public Vector3 Position { get; set; }
+        public BoundingSphere BoundingSphere { get; set; }
 
         public Asteroid(int size, int id, Vector3 position, float speed, Vector3 direction, 
             Vector3 ypr, float rotationSpeed, Model model, BoundingSphere boundingSphere)
         {
-            this.size = size;
-            this.id = id;
-            this.destroyed = false;
-            this.model = model;
-            this.ypr = ypr;
-            this.rotationSpeed = rotationSpeed;
-            this.world = Matrix.Identity;
-            this.speed = speed;
-            this.direction = direction;
-            this.position = position;
-            this.texture = null;
-            this.boundingSphere = ScaleBoundingSphere(boundingSphere);
+            this.Size = size;
+            this.ID = id;
+            this.Destroyed = false;
+            this.Model = model;
+            this.YPR = ypr;
+            this.RotationSpeed = rotationSpeed;
+            this.World = Matrix.Identity;
+            this.Speed = speed;
+            this.Direction = direction;
+            this.Position = position;
+            this.Texture = null;
+            this.BoundingSphere = ScaleBoundingSphere(boundingSphere);
         }
 
         public void Update(CollisionEngine collisionEngine, SoundEngine soundEngine, 
@@ -47,40 +47,37 @@ namespace Asteroids
         {
             CheckCollisions(collisionEngine, soundEngine, torpedoes, asteroids, rng, models, sphereRadius);
 
-            float yprRate = getRotationSpeed() / gameTime.ElapsedGameTime.Milliseconds;
+            float yprRate = this.RotationSpeed / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
-            setYPR(ypr);
+            this.YPR = ypr;
 
-            float speed = (float) getSpeed() / gameTime.ElapsedGameTime.Milliseconds;
-            Vector3 velocity = speed * getDirection();
-            setPosition(getPosition() + velocity);
-            BoundingSphere bs = new BoundingSphere(getPosition(), getBoundingSphere().Radius);
-            setBoundingSphere(bs);
+            float speed = (float) this.Speed / gameTime.ElapsedGameTime.Milliseconds;
+            Vector3 velocity = speed * this.Direction;
+            UpdatePosition(this.Position + velocity);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
-            Vector3 ypr = getYPR();
+            this.Texture = content.Load<Texture2D>(TEXTURE_PATH);
+            Vector3 ypr = this.YPR;
 
-            setWorldMatrix(Matrix.CreateScale(DetermineScale()) * 
+            this.World = Matrix.CreateScale(DetermineScale()) *
                 Matrix.CreateRotationX(ypr.X) *
                 Matrix.CreateRotationY(ypr.Y) *
-                Matrix.CreateRotationZ(ypr.Z) * 
-                Matrix.CreateTranslation(getPosition())
-            );
-            Matrix[] transformation = new Matrix[this.model.Bones.Count];
-            this.model.CopyAbsoluteBoneTransformsTo(transformation);
-            foreach (ModelMesh mesh in this.model.Meshes)
+                Matrix.CreateRotationZ(ypr.Z) *
+                Matrix.CreateTranslation(this.Position);
+            Matrix[] transformation = new Matrix[this.Model.Bones.Count];
+            this.Model.CopyAbsoluteBoneTransformsTo(transformation);
+            foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    effect.World = World;
                     effect.View = view;
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
                     effect.TextureEnabled = true;
-                    effect.Texture = this.texture;
+                    effect.Texture = this.Texture;
                 }
                 mesh.Draw();
             }
@@ -91,27 +88,27 @@ namespace Asteroids
             float[] sphereRadius)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
-            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
             {
-                float edge = collisionEngine.getEdgeOfUniverse();
-                Vector3 pos = getPosition();
-                Vector3 dir = getDirection();
+                float edge = collisionEngine.EDGE_OF_UNIVERSE;
+                Vector3 pos = this.Position;
+                Vector3 dir = this.Direction;
                 if (Math.Abs(pos.X) > edge)
                     dir.X = -dir.X;
                 else if (Math.Abs(pos.Y) > edge)
                     dir.Y = -dir.Y;
                 else if (Math.Abs(pos.Z) > edge)
                     dir.Z = -dir.Z;
-                setDirection(dir);
+                this.Direction = dir;
             }
 
             // Destroy or decrease the size if it hits a torpedo
             foreach (Torpedo torpedo in torpedoes)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, getBoundingSphere(), 
-                    torpedo.getBoundingSphere()))
+                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
+                    torpedo.BoundingSphere))
                 {
-                    torpedo.setDestroyed(true);
+                    torpedo.Destroyed = true;
                     DecreaseSize(rng, models, sphereRadius);
                     break;
                 }
@@ -120,14 +117,14 @@ namespace Asteroids
             // Destroy or decrease the size if it hits another asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (asteroid.getID() != this.getID())
+                if (asteroid.ID != this.ID)
                 {
                     if (collisionEngine.CollideTwoObjects(soundEngine, 
-                        asteroid.getBoundingSphere(), this.getBoundingSphere()))
+                        asteroid.BoundingSphere, this.BoundingSphere))
                     {
                         DecreaseSize(rng, models, sphereRadius);
                         Vector3 exitVector = CalculateExitVector(asteroid);
-                        setDirection(exitVector);
+                        this.Direction = exitVector;
                         break;
                     }
                 }
@@ -136,12 +133,12 @@ namespace Asteroids
 
         private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius)
         {
-            int newSize = getSize();
+            int newSize = this.Size;
 
             // KABOOM
             if (newSize < 2)
             {
-                setDestroyed(true);
+                this.Destroyed = true;
                 return;
             }
             else
@@ -149,25 +146,25 @@ namespace Asteroids
                 newSize -= 2;
 
                 // Reinitialize properties
-                setModel(models[newSize]);
-                setSize(newSize);
-                BoundingSphere bs = new BoundingSphere(getPosition(), sphereRadius[newSize]);
-                setBoundingSphere(ScaleBoundingSphere(bs));
+                this.Model = models[newSize];
+                this.Size = newSize;
+                BoundingSphere bs = new BoundingSphere(this.Position, sphereRadius[newSize]);
+                this.BoundingSphere = ScaleBoundingSphere(bs);
             }
         }
 
         private Vector3 CalculateExitVector(Asteroid asteroid)
         {
-            Vector3 pos1 = getPosition();
-            Vector3 pos2 = asteroid.getPosition();
+            Vector3 pos1 = this.Position;
+            Vector3 pos2 = asteroid.Position;
             Vector3 normalize = pos1 - pos2;
             normalize.Normalize();
-            Vector3 dir1 = getDirection();
-            Vector3 dir2 = asteroid.getDirection();
+            Vector3 dir1 = this.Direction;
+            Vector3 dir2 = asteroid.Direction;
             float dot1 = Vector3.Dot(dir1, normalize);
             float dot2 = Vector3.Dot(dir2, normalize);
-            float mass1 = (getSize() + 1) / 2;
-            float mass2 = (asteroid.getSize() + 1) / 2;
+            float mass1 = (this.Size + 1) / 2;
+            float mass2 = (asteroid.Size + 1) / 2;
             float momentum = (2 * (dot1 - dot2)) / (mass1 + mass2);
             Vector3 newDirection = dir1 - momentum * mass2 * normalize;
             return newDirection;
@@ -175,7 +172,7 @@ namespace Asteroids
 
         private Vector3 UpdateYPR(float rate)
         {
-            Vector3 ypr = getYPR();
+            Vector3 ypr = this.YPR;
             ypr.X += rate;
             ypr.Y += rate;
             ypr.Z += rate;
@@ -188,7 +185,7 @@ namespace Asteroids
          */
         private float DetermineScale()
         {
-            int size = getSize();
+            int size = this.Size;
             if (size == 0 || size == 1)
                 return 200f;
             else if (size == 2)
@@ -207,117 +204,13 @@ namespace Asteroids
         {
             float radius = boundingSphere.Radius;
             radius *= DetermineScale();
-            return new BoundingSphere(this.position, radius);
+            return new BoundingSphere(this.Position, radius);
         }
 
-        public int getSize()
+        public void UpdatePosition(Vector3 position)
         {
-            return this.size;
-        }
-
-        public void setSize(int size)
-        {
-            this.size = size;
-        }
-
-        public int getID()
-        {
-            return this.id;
-        }
-
-        public void setID(int id)
-        {
-            this.id = id;
-        }
-
-        public Model getModel()
-        {
-            return this.model;
-        }
-
-        public void setModel(Model model)
-        {
-            this.model = model;
-        }
-
-        public bool isDestroyed()
-        {
-            return this.destroyed;
-        }
-
-        public void setDestroyed(bool destroyed)
-        {
-            this.destroyed = destroyed;
-        }
-
-        public float getSpeed()
-        {
-            return this.speed;
-        }
-
-        public void setSpeed(float speed)
-        {
-            this.speed = speed;
-        }
-
-        public Vector3 getDirection()
-        {
-            return this.direction;
-        }
-
-        public void setDirection(Vector3 direction)
-        {
-            this.direction = direction;
-        }
-
-        public Vector3 getYPR()
-        {
-            return this.ypr;
-        }
-
-        public void setYPR(Vector3 ypr)
-        {
-            this.ypr = ypr;
-        }
-
-        public float getRotationSpeed()
-        {
-            return this.rotationSpeed;
-        }
-
-        public void setRotationSpeed(float rotationSpeed)
-        {
-            this.rotationSpeed = rotationSpeed;
-        }
-
-        public Vector3 getPosition()
-        {
-            return this.position;
-        }
-
-        public void setPosition(Vector3 position)
-        {
-            this.position = position;
-        }
-
-        public Matrix getWorldMatrix()
-        {
-            return this.world;
-        }
-
-        public void setWorldMatrix(Matrix worldMatrix)
-        {
-            this.world = worldMatrix;
-        }
-
-        public BoundingSphere getBoundingSphere()
-        {
-            return this.boundingSphere;
-        }
-
-        public void setBoundingSphere(BoundingSphere boundingSphere)
-        {
-            this.boundingSphere = boundingSphere;
+            this.Position = position;
+            this.BoundingSphere = new BoundingSphere(position, this.BoundingSphere.Radius);
         }
     }
 }

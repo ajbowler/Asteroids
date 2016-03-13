@@ -12,42 +12,42 @@ namespace Asteroids
         public const string TEXTURE_PATH = "Models/torp_texture";
         public const float VELOCITY_CONST = 1000f;
 
-        private Model model;
-        private Texture2D texture;
-        private Vector3 position;
-        private Vector3 direction;
-        private Matrix world;
-        private BoundingSphere boundingSphere;
-        private bool destroyed;
+        public Model Model { get; set; }
+        public Texture2D Texture { get; set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Direction { get; set; }
+        public Matrix World { get; set; }
+        public BoundingSphere BoundingSphere { get; set; }
+        public bool Destroyed { get; set; }
 
         public Torpedo(Vector3 pos, Vector3 dir)
         {
-            this.model = null;
-            this.texture = null;
-            this.position = pos;
-            this.direction = dir;
-            this.world = Matrix.Identity;
-            this.boundingSphere = new BoundingSphere();
-            this.destroyed = false;
+            this.Model = null;
+            this.Texture = null;
+            this.Position = pos;
+            this.Direction = dir;
+            this.World = Matrix.Identity;
+            this.BoundingSphere = new BoundingSphere();
+            this.Destroyed = false;
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
         {
             float radius = 0f;
-            this.model = content.Load<Model>(MODEL_PATH);
-            foreach (ModelMesh mesh in model.Meshes)
+            this.Model = content.Load<Model>(MODEL_PATH);
+            foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
 
                 foreach (BasicEffect currentEffect in mesh.Effects)
-                    this.texture = currentEffect.Texture;
+                    this.Texture = currentEffect.Texture;
 
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                     meshPart.Effect = effect.Clone();
             }
 
-            this.boundingSphere = new BoundingSphere(getPosition(), radius);
-            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
+            this.BoundingSphere = new BoundingSphere(this.Position, radius);
+            this.Texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
         public void Update(CollisionEngine collisionEngine, SoundEngine soundEngine,
@@ -55,29 +55,29 @@ namespace Asteroids
         {
             CheckCollisions(collisionEngine, soundEngine, asteroids);
             float speed = VELOCITY_CONST / gameTime.ElapsedGameTime.Milliseconds;
-            Vector3 velocity = speed * getDirection();
-            Vector3 newPos = getPosition() + velocity;
-            setPosition(newPos);
+            Vector3 velocity = speed * this.Direction;
+            Vector3 newPos = this.Position + velocity;
+            UpdatePosition(newPos);
         }
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            if (isDestroyed())
+            if (this.Destroyed)
                 return;
 
-            setWorldMatrix(Matrix.CreateScale(5f) * Matrix.CreateTranslation(getPosition()));
-            Matrix[] transformation = new Matrix[this.model.Bones.Count];
-            this.model.CopyAbsoluteBoneTransformsTo(transformation);
-            foreach (ModelMesh mesh in this.model.Meshes)
+            this.World = Matrix.CreateScale(5f) * Matrix.CreateTranslation(this.Position);
+            Matrix[] transformation = new Matrix[this.Model.Bones.Count];
+            this.Model.CopyAbsoluteBoneTransformsTo(transformation);
+            foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    effect.World = this.World;
                     effect.View = view;
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
                     effect.TextureEnabled = true;
-                    effect.Texture = this.texture;
+                    effect.Texture = this.Texture;
                 }
                 mesh.Draw();
             }
@@ -87,78 +87,28 @@ namespace Asteroids
             List<Asteroid> asteroids)
         {
             // Destroy the torpedo if it hits the edge of the universe
-            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
             {
-                soundEngine.Explosion().Play();
-                setDestroyed(true);
+                soundEngine.Explosion.Play();
+                this.Destroyed = true;
             }
 
             // Destroy the torpedo if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, getBoundingSphere(), 
-                    asteroid.getBoundingSphere()))
+                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
+                    asteroid.BoundingSphere))
                 {
-                    setDestroyed(true);
+                    this.Destroyed = true;
                     break;
                 }
             }
         }
 
-        public Model getModel()
+        public void UpdatePosition(Vector3 position)
         {
-            return this.model;
-        }
-
-        public Vector3 getPosition()
-        {
-            return this.position;
-        }
-
-        public void setPosition(Vector3 position)
-        {
-            this.position = position;
-            setBoundingSphere(position);
-        }
-
-        public Vector3 getDirection()
-        {
-            return this.direction;
-        }
-
-        public void setDirection(Vector3 direction)
-        {
-            this.direction = direction;
-        }
-
-        public Matrix getWorldMatrix()
-        {
-            return this.world;
-        }
-
-        public void setWorldMatrix(Matrix world)
-        {
-            this.world = world;
-        }
-
-        public BoundingSphere getBoundingSphere()
-        {
-            return this.boundingSphere;
-        }
-
-        public void setBoundingSphere(Vector3 position)
-        {
-            this.boundingSphere = new BoundingSphere(position, getBoundingSphere().Radius);
-        }
-
-        public bool isDestroyed()
-        {
-            return this.destroyed;
-        }
-
-        public void setDestroyed(bool destroyed)
-        {
-            this.destroyed = destroyed;
+            this.Position = position;
+            this.BoundingSphere = new BoundingSphere(position, this.BoundingSphere.Radius);
         }
     }
 }

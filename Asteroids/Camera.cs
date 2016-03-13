@@ -10,21 +10,21 @@ namespace Asteroids
 {
     class Camera
     {
-        Matrix view;
-        Matrix projection;
-        GraphicsDevice device;
+        public Matrix View { get; set; }
+        public Matrix Projection { get; set; }
+        public GraphicsDevice Device { get; set; }
 
         public Camera(GraphicsDevice device)
         {
-            this.device = device;
+            this.Device = device;
 
-            this.view = Matrix.CreateLookAt(
+            this.View = Matrix.CreateLookAt(
                 new Vector3(0, 15f, 40f),
                 new Vector3(0, 0, 0),
                 new Vector3(0, 1, 0)
             );
 
-            this.projection = Matrix.CreatePerspectiveFieldOfView(
+            this.Projection = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.PiOver4,
                 device.Viewport.AspectRatio,
                 1.0f,
@@ -37,55 +37,30 @@ namespace Asteroids
             Vector3 newPosition = new Vector3(0f, 15f, -40f);
             newPosition = Vector3.Transform(
                 newPosition, 
-                Matrix.CreateFromQuaternion(spaceship.getRotation())
+                Matrix.CreateFromQuaternion(spaceship.Rotation)
             );
-            newPosition += spaceship.getPosition();
+            newPosition += spaceship.Position;
 
             Vector3 newUp = new Vector3(0, 1, 0);
             newUp = Vector3.Transform(
                 newUp, 
-                Matrix.CreateFromQuaternion(spaceship.getRotation())
+                Matrix.CreateFromQuaternion(spaceship.Rotation)
             );
 
-            setView(
-                Matrix.CreateLookAt(
-                    newPosition, spaceship.getPosition(), newUp
-                )
-            );
+            this.View = Matrix.CreateLookAt(newPosition, spaceship.Position, newUp);
 
-            setProjection(
+            this.Projection =
                 Matrix.CreatePerspectiveFieldOfView(
-                    MathHelper.PiOver4, this.device.Viewport.AspectRatio, 1.0f, 100000.0f
-                )
-            );
+                    MathHelper.PiOver4, this.Device.Viewport.AspectRatio, 1.0f, 100000.0f
+                );
         }
 
-        public Matrix getView()
+        public Vector3 GetDirection()
         {
-            return this.view;
+            return Matrix.Invert(this.View).Forward;
         }
 
-        public void setView(Matrix view)
-        {
-            this.view = view;
-        }
-
-        public Matrix getProjection()
-        {
-            return this.projection;
-        }
-
-        public void setProjection(Matrix projection)
-        {
-            this.projection = projection;
-        }
-
-        public Vector3 getDirection()
-        {
-            return Matrix.Invert(this.view).Forward;
-        }
-
-        public Vector3 getUp()
+        public Vector3 GetUp()
         {
             return new Vector3(0, 1, 0);
         }

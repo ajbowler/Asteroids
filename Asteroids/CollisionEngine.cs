@@ -7,7 +7,7 @@ namespace Asteroids
     {
         // The max distance of the skybox is 15K, but this eliminates 
         // any overlap between the skybox and the models
-        public const float EDGE_OF_UNIVERSE = 14000;
+        public float EDGE_OF_UNIVERSE = 14000;
 
         public CollisionEngine()
         {
@@ -18,7 +18,7 @@ namespace Asteroids
         {
             if (bs1.Intersects(bs2))
             {
-                soundEngine.Explosion().Play();
+                soundEngine.Explosion.Play();
                 return true;
             }
             else
@@ -33,11 +33,6 @@ namespace Asteroids
                 Math.Abs(position.Y) + radius > EDGE_OF_UNIVERSE ||
                 Math.Abs(position.Z) + radius > EDGE_OF_UNIVERSE
             );
-        }
-
-        public float getEdgeOfUniverse()
-        {
-            return EDGE_OF_UNIVERSE;
         }
     }
 }

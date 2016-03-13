@@ -17,48 +17,48 @@ namespace Asteroids
         public const float VELOCITY_MAX = 40f;
         public const int MAX_LIVES = 3;
 
-        private Vector3 position;
-        private Quaternion rotation;
-        private Vector3 velocity;
-        private float speed;
-        private Matrix world;
-        private Model model;
-        private Texture2D texture;
-        private BoundingSphere boundingSphere;
-        private bool destroyed;
-        private int lives;
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+        public Vector3 Velocity { get; set; }
+        public float Speed { get; set; }
+        public Matrix World { get; set; }
+        public Model Model { get; set; }
+        public Texture2D Texture { get; set; }
+        public BoundingSphere BoundingSphere { get; set; }
+        public bool Destroyed { get; set; }
+        public int Lives { get; set; }
 
         public Spaceship()
         {
-            this.position = Vector3.Zero;
-            this.rotation = Quaternion.Identity;
-            this.model = null;
-            this.texture = null;
-            this.velocity = Vector3.Zero;
-            this.speed = 0f;
-            this.world = Matrix.Identity;
-            this.boundingSphere = new BoundingSphere();
-            this.destroyed = false;
-            this.lives = 3;
+            this.Position = Vector3.Zero;
+            this.Rotation = Quaternion.Identity;
+            this.Model = null;
+            this.Texture = null;
+            this.Velocity = Vector3.Zero;
+            this.Speed = 0f;
+            this.World = Matrix.Identity;
+            this.BoundingSphere = new BoundingSphere();
+            this.Destroyed = false;
+            this.Lives = 3;
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
         {
             float radius = 0f;
-            this.model = content.Load<Model>(MODEL_PATH);
-            foreach (ModelMesh mesh in model.Meshes)
+            this.Model = content.Load<Model>(MODEL_PATH);
+            foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
 
                 foreach (BasicEffect currentEffect in mesh.Effects)
-                    this.texture = currentEffect.Texture;
+                    this.Texture = currentEffect.Texture;
 
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                     meshPart.Effect = effect.Clone();
             }
 
-            this.boundingSphere = new BoundingSphere(getPosition(), radius);
-            this.texture = content.Load<Texture2D>(TEXTURE_PATH);
+            this.BoundingSphere = new BoundingSphere(this.Position, radius);
+            this.Texture = content.Load<Texture2D>(TEXTURE_PATH);
         }
 
         public void Update(Vector3 direction, CollisionEngine collisionEngine, 
@@ -67,17 +67,17 @@ namespace Asteroids
         {
             CheckCollisions(collisionEngine, soundEngine, asteroids);
 
-            if (isDestroyed())
+            if (this.Destroyed)
             {
-                if (getLives() == 0)
+                if (this.Lives == 0)
                     return;
                 else
                 {
-                    setPosition(new Vector3(0, 0, 0));
-                    setDestroyed(false);
-                    setSpeed(0f);
-                    setVelocity(Vector3.Zero);
-                    setRotation(Quaternion.Identity);
+                    UpdatePosition(new Vector3(0, 0, 0));
+                    this.Destroyed = false;
+                    this.Speed = 0f;
+                    this.Velocity = Vector3.Zero;
+                    this.Rotation = Quaternion.Identity;
                 }
             }
 
@@ -87,23 +87,23 @@ namespace Asteroids
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            setWorldMatrix(Matrix.CreateRotationX(MathHelper.Pi / 2) *
+            this.World = Matrix.CreateRotationX(MathHelper.Pi / 2) *
                 Matrix.CreateRotationZ(MathHelper.Pi) *
-                Matrix.CreateFromQuaternion(getRotation()) *
-                Matrix.CreateTranslation(getPosition()));
+                Matrix.CreateFromQuaternion(this.Rotation) *
+                Matrix.CreateTranslation(this.Position);
 
-            Matrix[] transformation = new Matrix[this.model.Bones.Count];
-            this.model.CopyAbsoluteBoneTransformsTo(transformation);
-            foreach (ModelMesh mesh in this.model.Meshes)
+            Matrix[] transformation = new Matrix[this.Model.Bones.Count];
+            this.Model.CopyAbsoluteBoneTransformsTo(transformation);
+            foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    effect.World = World;
                     effect.View = view;
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
                     effect.TextureEnabled = true;
-                    effect.Texture = this.texture;
+                    effect.Texture = this.Texture;
                 }
                 mesh.Draw();
             }
@@ -117,25 +117,25 @@ namespace Asteroids
                 if (keys.IsKeyDown(Keys.W))
                 {
                     Thrust(direction, gameTime);
-                    soundEngine.ShipEngine().Play();
+                    soundEngine.ShipEngine.Play();
                 }
 
                 if (keys.IsKeyDown(Keys.D))
                 {
                     Roll(gameTime, "right");
-                    soundEngine.ShipEngine().Play();
+                    soundEngine.ShipEngine.Play();
                 }
 
                 if (keys.IsKeyDown(Keys.A))
                 {
                     Roll(gameTime, "left");
-                    soundEngine.ShipEngine().Play();
+                    soundEngine.ShipEngine.Play();
                 }
             }
             else
             {
                 Stop(direction, gameTime);
-                soundEngine.ShipEngine().Stop();
+                soundEngine.ShipEngine.Stop();
             }
         }
 
@@ -148,14 +148,14 @@ namespace Asteroids
             float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             float speed = (ACCEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) 
                 * changeInTime
-                + getSpeed();
+                + this.Speed;
             if (speed > VELOCITY_MAX)
                 speed = VELOCITY_MAX;
-            setSpeed(speed);
+            this.Speed = speed;
             Vector3 velocity = CalculateVelocityVector(speed, direction);
-            setVelocity(velocity);
-            Vector3 newPosition = getPosition() + velocity;
-            setPosition(newPosition);
+            this.Velocity = velocity;
+            Vector3 newPosition = this.Position + velocity;
+            UpdatePosition(newPosition);
         }
 
         private void Stop(Vector3 direction, GameTime gameTime)
@@ -163,14 +163,14 @@ namespace Asteroids
             float changeInTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             float speed = (-DECEL_CONSTANT / (float)gameTime.ElapsedGameTime.Milliseconds) 
                 * changeInTime
-                + getSpeed();
+                + this.Speed;
             if (speed < 0)
                 speed = 0;
-            setSpeed(speed);
+            this.Speed = speed;
             Vector3 velocity = CalculateVelocityVector(speed, direction);
-            setVelocity(velocity);
-            Vector3 newPosition = getPosition() + velocity;
-            setPosition(newPosition);
+            this.Velocity = velocity;
+            Vector3 newPosition = this.Position + velocity;
+            UpdatePosition(newPosition);
         }
 
         private Vector3 CalculateVelocityVector(float speed, Vector3 direction)
@@ -183,13 +183,13 @@ namespace Asteroids
 
         private void Roll(GameTime gameTime, string direction)
         {
-            Quaternion rotation = getRotation();
+            Quaternion rotation = this.Rotation;
             float rotationDirection = 0.4f / gameTime.ElapsedGameTime.Milliseconds;
             if (direction.Equals("right"))
                 rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, -rotationDirection);
             else if (direction.Equals("left"))
                 rotation *= Quaternion.CreateFromYawPitchRoll(0, 0, rotationDirection);
-            setRotation(rotation);
+            this.Rotation = rotation;
         }
 
         private void ProcessMouse(MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
@@ -199,7 +199,7 @@ namespace Asteroids
             {
                 float xDifference = currentMouseState.X - originalMouseState.X;
                 float yDifference = currentMouseState.Y - originalMouseState.Y;
-                Quaternion rotation = getRotation();
+                Quaternion rotation = this.Rotation;
                 float rotationFactor = 0.01f / gameTime.ElapsedGameTime.Milliseconds;
                 Quaternion newRotation = Quaternion.CreateFromYawPitchRoll(
                     xDifference * -rotationFactor,
@@ -209,7 +209,7 @@ namespace Asteroids
 
                 Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
                 rotation *= newRotation;
-                setRotation(rotation);
+                this.Rotation = rotation;
             }
         }
 
@@ -217,11 +217,11 @@ namespace Asteroids
             List<Asteroid> asteroids)
         {
             // Check if the ship hits the edge of the universe
-            if (collisionEngine.CollidesWithEdge(getPosition(), getBoundingSphere()))
+            if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
             {
-                float edge = collisionEngine.getEdgeOfUniverse();
+                float edge = collisionEngine.EDGE_OF_UNIVERSE;
 
-                Vector3 pos = getPosition();
+                Vector3 pos = this.Position;
                 if (pos.X > edge)
                     pos.X = edge;
                 if (pos.X < -edge)
@@ -234,108 +234,33 @@ namespace Asteroids
                     pos.Z = edge;
                 if (pos.Z < -edge)
                     pos.Z = -edge;
-                setPosition(pos);
+                UpdatePosition(pos);
             }
 
             // The ship is destroyed if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, getBoundingSphere(), 
-                    asteroid.getBoundingSphere()))
+                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
+                    asteroid.BoundingSphere))
                 {
-                    setDestroyed(true);
-                    soundEngine.Explosion().Play();
+                    this.Destroyed = true;
+                    soundEngine.Explosion.Play();
                     LoseLife();
                 }
             }
         }
 
-        public Model getModel()
-        {
-            return this.model;
-        }
-
-        public BoundingSphere getBoundingSphere()
-        {
-            return this.boundingSphere;
-        }
-
-        public void setBoundingSphere(Vector3 position, float radius)
-        {
-            this.boundingSphere = new BoundingSphere(position, radius);
-        }
-
-        public Vector3 getPosition()
-        {
-            return this.position;
-        }
-
-        public void setPosition(Vector3 position)
-        {
-            this.position = position;
-            setBoundingSphere(position, getBoundingSphere().Radius);
-        }
-
-        public Quaternion getRotation()
-        {
-            return this.rotation;
-        }
-
-        public void setRotation(Quaternion rotation)
-        {
-            this.rotation = rotation;
-        }
-
-        public Matrix getWorldMatrix()
-        {
-            return this.world;
-        }
-
-        public void setWorldMatrix(Matrix world)
-        {
-            this.world = world;
-        }
-
-        public Vector3 getVelocity()
-        {
-            return this.velocity;
-        }
-
-        public void setVelocity(Vector3 velocity)
-        {
-            this.velocity = velocity;
-        }
-
-        public float getSpeed()
-        {
-            return this.speed;
-        }
-
-        public void setSpeed(float speed)
-        {
-            this.speed = speed;
-        }
-
-        public bool isDestroyed()
-        {
-            return this.destroyed;
-        }
-
-        public void setDestroyed(bool destroyed)
-        {
-            this.destroyed = destroyed;
-        }
-
-        public int getLives()
-        {
-            return this.lives;
-        }
-
         public void LoseLife()
         {
-            this.lives--;
-            if (this.lives < 0)
-                this.lives = 0;
+            this.Lives--;
+            if (this.Lives < 0)
+                this.Lives = 0;
+        }
+
+        public void UpdatePosition(Vector3 position)
+        {
+            this.Position = position;
+            this.BoundingSphere = new BoundingSphere(position, this.BoundingSphere.Radius);
         }
     }
 }

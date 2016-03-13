@@ -13,7 +13,7 @@ namespace Asteroids
     {
         public const string MODEL_PATH = "Models/skybox";
 
-        private Model model;
+        public Model model { get; set; }
         private Texture2D[] textures;
 
         public Skybox()
