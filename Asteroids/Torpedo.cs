@@ -65,7 +65,7 @@ namespace Asteroids
             if (this.Destroyed)
                 return;
 
-            this.World = Matrix.CreateScale(5f) * Matrix.CreateTranslation(this.Position);
+            this.World = Matrix.CreateScale(10f) * Matrix.CreateTranslation(this.Position);
             Matrix[] transformation = new Matrix[this.Model.Bones.Count];
             this.Model.CopyAbsoluteBoneTransformsTo(transformation);
             foreach (ModelMesh mesh in this.Model.Meshes)
