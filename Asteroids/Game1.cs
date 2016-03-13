@@ -12,6 +12,7 @@ namespace Asteroids
         GraphicsDevice device;
         SpriteBatch spriteBatch;
         BasicEffect effect;
+        Effect billboardEffect;
         CollisionEngine collisionEngine;
         SoundEngine soundEngine;
         Random rng = new Random();
@@ -75,6 +76,7 @@ namespace Asteroids
             device = graphics.GraphicsDevice;
             Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
             originalMouseState = Mouse.GetState();
+            billboardEffect = this.Content.Load<Effect>("Shaders/billboard_effect");
             camera = new Camera(device);
             lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
             explosionParticle = this.Content.Load<Texture2D>("Sprites/explosion_particle");
