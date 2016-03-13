@@ -25,7 +25,7 @@ namespace Asteroids
         List<ExplosionBillboard> explosionBillboards;
         List<Asteroid> asteroids;
         Texture2D lifeTexture;
-        Texture2D explosionParticle;
+        Texture2D explosionParticleTexture;
         SpriteFont timeFont;
         string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
@@ -79,7 +79,7 @@ namespace Asteroids
             billboardEffect = this.Content.Load<Effect>("Shaders/billboard_effect");
             camera = new Camera(device);
             lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
-            explosionParticle = this.Content.Load<Texture2D>("Sprites/explosion_particle");
+            explosionParticleTexture = this.Content.Load<Texture2D>("Sprites/explosion_particle");
             timeFont = Content.Load<SpriteFont>("Fonts/Courier New");
             collisionEngine = new CollisionEngine();
             soundEngine = new SoundEngine(this.Content);
@@ -89,6 +89,8 @@ namespace Asteroids
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
             explosionBillboards = new List<ExplosionBillboard>();
+            explosionBillboards.Add(new ExplosionBillboard(device, explosionParticleTexture, 
+                billboardEffect, 0, new Vector2(800), new Vector3(0, 0, 5000)));
             LoadAsteroids();
         }
 
@@ -156,6 +158,8 @@ namespace Asteroids
                 spaceship.Draw(this.Content, camera.View, camera.Projection);
                 DrawLives(spaceship.Lives);
             }
+            foreach (ExplosionBillboard billboard in explosionBillboards)
+                billboard.Draw(camera);
             DrawTime(gameClock);
             base.Draw(gameTime);
         }

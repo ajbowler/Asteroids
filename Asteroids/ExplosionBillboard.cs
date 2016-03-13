@@ -15,7 +15,7 @@ namespace Asteroids
         public Texture2D Texture { get; set; }
         public Effect Effect { get; set; }
         public int Lifetime { get; set; }
-        public float Size { get; set; }
+        public Vector2 Size { get; set; }
         public Color Color { get; set; }
         public Matrix World { get; set; }
         public Vector3 Position { get; set; }
@@ -25,7 +25,7 @@ namespace Asteroids
         private int[] Indices;
 
         public ExplosionBillboard(GraphicsDevice device, Texture2D texture, Effect effect, 
-            int lifetime, float size, Vector3 position)
+            int lifetime, Vector2 size, Vector3 position)
         {
             this.Device = device;
             this.Texture = texture;
@@ -44,17 +44,23 @@ namespace Asteroids
             // TODO
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        public void Draw(Camera camera)
         {
+            this.Device.SetVertexBuffer(this.VertexBuffer);
+            this.Device.Indices = this.IndexBuffer;
+
             this.Effect.Parameters["ParticleTexture"].SetValue(this.Texture);
             this.Effect.Parameters["View"].SetValue(camera.View);
             this.Effect.Parameters["Projection"].SetValue(camera.Projection);
-            this.Effect.Parameters["Size"].SetValue(this.Size / 2f);
+            this.Effect.Parameters["Size"].SetValue(this.Size);
             this.Effect.Parameters["Up"].SetValue(camera.GetUp());
-            this.Effect.Parameters["Right"].SetValue(camera.GetRight());
+            this.Effect.Parameters["Side"].SetValue(camera.GetRight());
             this.Effect.CurrentTechnique.Passes[0].Apply();
 
-            // TODO
+            this.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
+
+            this.Device.SetVertexBuffer(null);
+            this.Device.Indices = null;
         }
 
         public void MakeParticle()
