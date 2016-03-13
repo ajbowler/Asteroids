@@ -267,7 +267,7 @@ namespace Asteroids
         }
 
         /**
-         * Draws the current number of lives. Image is 95x108 pixels.
+         * Draws the current number of lives.
          */
         private void DrawLives(int lives)
         {
