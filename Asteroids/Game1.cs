@@ -161,7 +161,7 @@ namespace Asteroids
             // Do not fire until the 2 second interval has passed
             if (timer == 0)
             {
-                Torpedo torp = new Torpedo(spaceship.Position, spaceship.World.Up + camera.GetDirection());
+                Torpedo torp = new Torpedo(spaceship.Position + new Vector3(0, -20, 0), spaceship.World.Up + camera.GetDirection());
                 torp.LoadModelAndTexture(this.Content, effect);
                 torpedoes.Add(torp);
                 soundEngine.WeaponFire.Play();
