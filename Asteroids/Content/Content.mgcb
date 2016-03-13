@@ -340,3 +340,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Courier New.spritefont
 
+#begin Shaders/billboard_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/billboard_effect.fx
+
