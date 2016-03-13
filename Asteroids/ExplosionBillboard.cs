@@ -11,6 +11,7 @@ namespace Asteroids
 {
     class ExplosionBillboard
     {
+        public GraphicsDevice Device { get; set; }
         public Texture2D Texture { get; set; }
         public int Lifetime { get; set; }
         public float Size { get; set; }
@@ -20,15 +21,20 @@ namespace Asteroids
         public VertexBuffer VertexBuffer { get; set; }
         public IndexBuffer IndexBuffer { get; set; }
         private VertexPositionTexture[] Particle;
+        private int[] Indices;
 
-        public ExplosionBillboard(Texture2D texture, int lifetime, float size, Vector3 position)
+        public ExplosionBillboard(GraphicsDevice device, Texture2D texture, int lifetime, 
+            float size, Vector3 position)
         {
+            this.Device = device;
             this.Texture = texture;
             this.Lifetime = lifetime;
             this.Size = size;
             this.Position = position;
             this.World = Matrix.Identity;
             this.Particle = new VertexPositionTexture[4];
+            this.Indices = new int[6];
+            MakeParticle();
         }
 
         public void Update(GameTime gameTime)
@@ -43,6 +49,25 @@ namespace Asteroids
 
         public void MakeParticle()
         {
+            this.Particle[0] = new VertexPositionTexture(this.Position, new Vector2(0, 0));
+            this.Particle[1] = new VertexPositionTexture(this.Position, new Vector2(0, 1));
+            this.Particle[2] = new VertexPositionTexture(this.Position, new Vector2(1, 1));
+            this.Particle[3] = new VertexPositionTexture(this.Position, new Vector2(1, 0));
+
+            this.Indices[0] = 0;
+            this.Indices[1] = 3;
+            this.Indices[2] = 2;
+            this.Indices[3] = 2;
+            this.Indices[4] = 1;
+            this.Indices[5] = 0;
+
+            this.VertexBuffer = new VertexBuffer(this.Device, typeof(VertexPositionTexture), 
+                4, BufferUsage.WriteOnly);
+            this.VertexBuffer.SetData<VertexPositionTexture>(this.Particle);
+            this.IndexBuffer = new IndexBuffer(this.Device, IndexElementSize.ThirtyTwoBits, 
+                6, BufferUsage.WriteOnly);
+            this.IndexBuffer.SetData<int>(this.Indices);
+
             // TODO
         }
 
