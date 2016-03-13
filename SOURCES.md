@@ -9,3 +9,5 @@ Karen Doty for the Spaceship model and texture
 Star Wars for the weapon firing sound
 
 [Explosion Sound](https://www.freesound.org/people/Nbs%20Dark/sounds/94185/)
+
+[Particle Billboards](http://www.amazon.com/Graphics-XNA-Game-Studio-4-0/dp/1849690049)
