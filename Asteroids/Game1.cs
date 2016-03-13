@@ -31,7 +31,7 @@ namespace Asteroids
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
-        public const float AST_SPEED_LIMIT = 50f;
+        public const float AST_SPEED_LIMIT = 200f;
         public const float AST_SPAWN_LIMIT = 13000f;
         public const float SHIP_SAFE_SPAWN_ZONE = 2000f;
 
