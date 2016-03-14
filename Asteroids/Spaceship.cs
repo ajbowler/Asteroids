@@ -62,8 +62,8 @@ namespace Asteroids
         }
 
         public void Update(Vector3 direction, CollisionEngine collisionEngine, 
-            SoundEngine soundEngine, List<Asteroid> asteroids, MouseState originalMouseState, 
-            GameTime gameTime, GraphicsDevice device)
+            SoundEngine soundEngine, ParticleEngine particleEngine,List<Asteroid> asteroids, 
+            MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
         {
             CheckCollisions(collisionEngine, soundEngine, asteroids);
 
@@ -73,6 +73,7 @@ namespace Asteroids
                     return;
                 else
                 {
+                    particleEngine.AddParticle(gameTime, this.Position);
                     UpdatePosition(new Vector3(0, 0, 0));
                     this.Destroyed = false;
                     this.Speed = 0f;
@@ -213,8 +214,8 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine,
-            List<Asteroid> asteroids)
+        private void CheckCollisions(CollisionEngine collisionEngine, 
+            SoundEngine soundEngine, List<Asteroid> asteroids)
         {
             // Check if the ship hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
