@@ -11,8 +11,6 @@ A/D - Roll
 
 Left Mouse Button - Fire Torpedo (cooldown of 2 seconds)
 
-R - Activate Shield
-
 Q - Activate Shrink
 
 ## The World
@@ -35,3 +33,7 @@ Powerups occasionally spawn in random positions of the world.
 - Install Monogame from the development branch
 - Clone repo, open in Visual Studio, verify everything builds with the Monogame Pipeline Tool
 - Run it in Visual Studio
+
+## Known Unresolved Issues
+- Occasionally when two asteroids collide the game hangs and nothing is drawn. I have not been able to figure out why this happens.
+- Occasionally when exiting the game a NullReferenceException is thrown.
