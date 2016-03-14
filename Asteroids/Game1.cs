@@ -91,7 +91,7 @@ namespace Asteroids
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
             powerups = new List<Powerup>();
-            Powerup powerup = new Powerup(Powerup.PowerupType.Shield, new Vector3(0, 0, 50));
+            Powerup powerup = new Powerup(Powerup.PowerupType.Shrink, new Vector3(0, 0, 50));
             powerup.LoadModel(this.Content, effect);
             powerups.Add(powerup);
             LoadAsteroids();

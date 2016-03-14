@@ -20,6 +20,7 @@ namespace Asteroids
         public const string SHIELD_MODEL_PATH = "Models/shield";
         public const string SHIELD_TEXTURE_PATH = "Models/shield_texture";
         public const string SHRINK_MODEL_PATH = "Models/shrink";
+        public const string SHRINK_TEXTURE_PATH = "Models/shrink_texture";
 
         public PowerupType Type { get; set; }
         public Vector3 Position { get; set; }
@@ -49,9 +50,12 @@ namespace Asteroids
                 this.Model = content.Load<Model>(SHIELD_MODEL_PATH);
                 this.Texture = content.Load<Texture2D>(SHIELD_TEXTURE_PATH);
             }
-
             else
+            {
                 this.Model = content.Load<Model>(SHRINK_MODEL_PATH);
+                this.Texture = content.Load<Texture2D>(SHRINK_TEXTURE_PATH);
+            }
+            
             foreach (ModelMesh mesh in this.Model.Meshes)
             {
                 radius = Math.Max(radius, mesh.BoundingSphere.Radius);
