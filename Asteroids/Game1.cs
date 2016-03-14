@@ -146,9 +146,12 @@ namespace Asteroids
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             effect.Projection = camera.Projection;
             effect.View = camera.View;
             skybox.Draw(device, camera.View, camera.Projection);
+            foreach (ExplosionBillboard billboard in explosionBillboards)
+                billboard.Draw(camera);
             foreach (Torpedo torp in torpedoes)
                 torp.Draw(this.Content, camera.View, camera.Projection);
             foreach (Asteroid asteroid in asteroids)
@@ -158,8 +161,6 @@ namespace Asteroids
                 spaceship.Draw(this.Content, camera.View, camera.Projection);
                 DrawLives(spaceship.Lives);
             }
-            foreach (ExplosionBillboard billboard in explosionBillboards)
-                billboard.Draw(camera);
             DrawTime(gameClock);
             base.Draw(gameTime);
         }

@@ -57,8 +57,9 @@ namespace Asteroids
             this.Effect.Parameters["Side"].SetValue(camera.GetRight());
             this.Effect.CurrentTechnique.Passes[0].Apply();
 
+            this.Device.BlendState = BlendState.AlphaBlend;
             this.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
-
+            this.Device.BlendState = BlendState.Opaque;
             this.Device.SetVertexBuffer(null);
             this.Device.Indices = null;
         }
