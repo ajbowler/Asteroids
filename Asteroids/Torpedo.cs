@@ -99,8 +99,7 @@ namespace Asteroids
             // Destroy the torpedo if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
-                    asteroid.BoundingSphere))
+                if (collisionEngine.CollideTwoObjects(this.BoundingSphere, asteroid.BoundingSphere))
                 {
                     particleEngine.AddParticle(gameTime, this.Position);
                     this.Destroyed = true;

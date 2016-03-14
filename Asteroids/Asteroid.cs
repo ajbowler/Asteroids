@@ -106,7 +106,7 @@ namespace Asteroids
             // Destroy or decrease the size if it hits a torpedo
             foreach (Torpedo torpedo in torpedoes)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
+                if (collisionEngine.CollideTwoObjects(this.BoundingSphere, 
                     torpedo.BoundingSphere))
                 {
                     torpedo.Destroyed = true;
@@ -121,8 +121,8 @@ namespace Asteroids
             {
                 if (asteroid.ID != this.ID)
                 {
-                    if (collisionEngine.CollideTwoObjects(soundEngine, 
-                        asteroid.BoundingSphere, this.BoundingSphere))
+                    if (collisionEngine.CollideTwoObjects(asteroid.BoundingSphere, 
+                        this.BoundingSphere))
                     {
                         if (soundEngine.Explosion.State != SoundState.Playing)
                             soundEngine.Explosion.Play();
