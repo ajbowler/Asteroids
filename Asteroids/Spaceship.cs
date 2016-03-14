@@ -244,13 +244,20 @@ namespace Asteroids
                 UpdatePosition(pos);
             }
 
-            // The ship is destroyed if it hits an asteroid
+            // The ship is destroyed if it hits an asteroid unless it has a shield, 
+            // in that case the asteroid is destroyed.
             foreach (Asteroid asteroid in asteroids)
             {
                 if (collisionEngine.CollideTwoObjects(this.BoundingSphere, 
                     asteroid.BoundingSphere))
                 {
-                    this.Destroyed = true;
+                    if (this.Shield != null)
+                    {
+                        asteroid.Destroyed = true;
+                        this.Shield = null;
+                    }
+                    else
+                        this.Destroyed = true;
                     if (soundEngine.Explosion.State != SoundState.Playing)
                         soundEngine.Explosion.Play();
                     LoseLife();
