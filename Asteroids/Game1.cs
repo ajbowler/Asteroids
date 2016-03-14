@@ -31,6 +31,7 @@ namespace Asteroids
         string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
         public const int ASTEROID_COUNT = 50;
+        public const int POWERUP_SPAWN_INTERVAL = 25;
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
         public const float AST_ROT_MAX_MAGNITUDE = 1.0f;
@@ -49,7 +50,8 @@ namespace Asteroids
         };
         public Model[] asteroidModels;
         public float[] asteroidBSRadius;
-        float timer = 0;
+        float reloadTimer = 0;
+        float powerupTimer = POWERUP_SPAWN_INTERVAL;
 
         public Game1()
         {
@@ -91,9 +93,6 @@ namespace Asteroids
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
             powerups = new List<Powerup>();
-            Powerup powerup = new Powerup(Powerup.PowerupType.Shrink, new Vector3(0, 0, 50));
-            powerup.LoadModel(this.Content, effect);
-            powerups.Add(powerup);
             LoadAsteroids();
         }
 
@@ -112,9 +111,16 @@ namespace Asteroids
             int totalTime = (int) gameTime.TotalGameTime.TotalSeconds;
             gameClock = totalTime.ToString();
 
-            timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
-            if (timer < 0)
-                timer = 0;
+            powerupTimer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
+            if (powerupTimer <= 0)
+            {
+                AddPowerup(rng);
+                powerupTimer = POWERUP_SPAWN_INTERVAL;
+            }
+
+            reloadTimer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
+            if (reloadTimer < 0)
+                reloadTimer = 0;
             Vector3 direction = camera.GetDirection();
 
             particleEngine.Update(gameTime);
@@ -176,13 +182,13 @@ namespace Asteroids
         private void FireTorpedo()
         {
             // Do not fire until the 2 second interval has passed
-            if (timer == 0)
+            if (reloadTimer == 0)
             {
                 Torpedo torp = new Torpedo(spaceship.Position + new Vector3(0, -20, 0), spaceship.World.Up + camera.GetDirection());
                 torp.LoadModelAndTexture(this.Content, effect);
                 torpedoes.Add(torp);
                 soundEngine.WeaponFire.Play();
-                timer = TORPEDO_FIRE_INTERVAL;
+                reloadTimer = TORPEDO_FIRE_INTERVAL;
             }
         }
 
@@ -204,7 +210,7 @@ namespace Asteroids
             for (int i = 0; i < ASTEROID_COUNT; i++)
             {
                 int size = rng.Next(0, 6);
-                Vector3 position = GenerateRandomAsteroidPosition();
+                Vector3 position = GenerateRandomPosition();
                 BoundingSphere boundingSphere = new BoundingSphere(position, asteroidBSRadius[size]);
                 float speed = RandomFloat(-AST_SPEED_LIMIT, AST_SPEED_LIMIT);
                 Vector3 direction = RandomUnitVector();
@@ -256,10 +262,10 @@ namespace Asteroids
         }
 
         /**
-         * Quick and dirty way of getting a random asteroid position 
+         * Quick and dirty way of getting a random position 
          * far enough away from the ship's starting position.
          */
-        private Vector3 GenerateRandomAsteroidPosition()
+        private Vector3 GenerateRandomPosition()
         {
             Vector3 position = Vector3.Zero;
             while (true)
@@ -306,6 +312,19 @@ namespace Asteroids
             Vector2 position = new Vector2(device.Viewport.Width - timeFont.MeasureString(time).X, 0);
             spriteBatch.DrawString(timeFont, time, position, Color.Gold);
             spriteBatch.End();
+        }
+
+        private void AddPowerup(Random rng)
+        {
+            int type = rng.Next();
+            Vector3 position = GenerateRandomPosition();
+            Powerup powerup;
+            if (type % 2 == 0)
+                powerup = new Powerup(Powerup.PowerupType.Shield, position);
+            else
+                powerup = new Powerup(Powerup.PowerupType.Shrink, position);
+            powerup.LoadModel(this.Content, effect);
+            powerups.Add(powerup);
         }
     }
 }
