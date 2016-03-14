@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -109,6 +110,7 @@ namespace Asteroids
                     torpedo.BoundingSphere))
                 {
                     torpedo.Destroyed = true;
+                    soundEngine.Explosion.Play();
                     DecreaseSize(rng, models, sphereRadius);
                     break;
                 }
@@ -122,6 +124,8 @@ namespace Asteroids
                     if (collisionEngine.CollideTwoObjects(soundEngine, 
                         asteroid.BoundingSphere, this.BoundingSphere))
                     {
+                        if (soundEngine.Explosion.State != SoundState.Playing)
+                            soundEngine.Explosion.Play();
                         DecreaseSize(rng, models, sphereRadius);
                         Vector3 exitVector = CalculateExitVector(asteroid);
                         this.Direction = exitVector;

@@ -19,8 +19,6 @@ namespace Asteroids
         {
             if (bs1.Intersects(bs2))
             {
-                if (soundEngine.Explosion.State != SoundState.Playing)
-                    soundEngine.Explosion.Play();
                 return true;
             }
             else
