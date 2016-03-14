@@ -11,6 +11,20 @@ A/D - Roll
 
 Left Mouse Button - Fire Torpedo (cooldown of 2 seconds)
 
+R - Activate Shield
+
+Q - Activate Shrink
+
+## The World
+Asteroids come in 3 sizes, small, medium, and large, and spawn in random shapes and sizes. Hit one, you die and lose a life. Lose all three of your lives and it's GG.
+
+#### Powerups
+Powerups occasionally spawn in random positions of the world.
+
+**Shields** allow you to hit an asteroid without dying. The shield is consumed once used.
+
+**Shrinks** decrease the size of your ship, allowing you to get out of sticky situations. The shrink lasts 10 seconds before you revert to normal size.
+
 ## Environment
 - Windows 10
 - Visual Studio 2015
