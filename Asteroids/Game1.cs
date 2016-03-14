@@ -124,7 +124,8 @@ namespace Asteroids
             for (int i = 0; i < torpedoes.Count; i++)
             {
                 if (!(torpedoes[i].Destroyed))
-                    torpedoes[i].Update(collisionEngine, soundEngine, gameTime, asteroids);
+                    torpedoes[i].Update(collisionEngine, soundEngine, particleEngine,
+                        gameTime, asteroids);
                 else
                     torpedoes.RemoveAt(i);
             }
