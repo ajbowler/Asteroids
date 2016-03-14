@@ -24,6 +24,7 @@ namespace Asteroids
         Spaceship spaceship;
         List<Torpedo> torpedoes;
         List<Asteroid> asteroids;
+        List<Powerup> powerups;
         Texture2D lifeTexture;
         Texture2D explosionParticleTexture;
         SpriteFont timeFont;
@@ -89,6 +90,7 @@ namespace Asteroids
             spaceship = new Spaceship();
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
+            powerups = new List<Powerup>();
             LoadAsteroids();
         }
 
