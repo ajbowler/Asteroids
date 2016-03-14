@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Asteroids
 {
@@ -245,7 +246,8 @@ namespace Asteroids
                     asteroid.BoundingSphere))
                 {
                     this.Destroyed = true;
-                    soundEngine.Explosion.Play();
+                    if (soundEngine.Explosion.State != SoundState.Playing)
+                        soundEngine.Explosion.Play();
                     LoseLife();
                 }
             }

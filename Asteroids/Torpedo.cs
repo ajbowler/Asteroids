@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 using System;
 using System.Collections.Generic;
 
@@ -89,7 +90,8 @@ namespace Asteroids
             // Destroy the torpedo if it hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
             {
-                soundEngine.Explosion.Play();
+                if (soundEngine.Explosion.State != SoundState.Playing)
+                    soundEngine.Explosion.Play();
                 this.Destroyed = true;
                 particleEngine.AddParticle(gameTime, this.Position);
             }

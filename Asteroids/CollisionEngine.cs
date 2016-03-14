@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using System;
 
 namespace Asteroids
@@ -18,7 +19,8 @@ namespace Asteroids
         {
             if (bs1.Intersects(bs2))
             {
-                soundEngine.Explosion.Play();
+                if (soundEngine.Explosion.State != SoundState.Playing)
+                    soundEngine.Explosion.Play();
                 return true;
             }
             else
