@@ -134,12 +134,18 @@ namespace Asteroids
             if (spaceship != null && spaceship.Lives > 0)
             {
                 spaceship.Update(direction, collisionEngine, soundEngine, 
-                    particleEngine, asteroids, originalMouseState, gameTime, device);
+                    particleEngine, asteroids, powerups, originalMouseState, gameTime, device);
                 camera.Update(spaceship);
                 ProcessClick(gameTime);
             }
             else
                 spaceship = null;
+
+            for (int i = 0; i < powerups.Count; i++)
+            {
+                if (powerups[i].Collected)
+                    powerups.RemoveAt(i);
+            }
 
             for (int i = 0; i < torpedoes.Count; i++)
             {

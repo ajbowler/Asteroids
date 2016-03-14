@@ -28,6 +28,7 @@ namespace Asteroids
         public BoundingSphere BoundingSphere { get; set; }
         public bool Destroyed { get; set; }
         public int Lives { get; set; }
+        public List<Powerup> Powerups { get; set; }
 
         public Spaceship()
         {
@@ -41,6 +42,7 @@ namespace Asteroids
             this.BoundingSphere = new BoundingSphere();
             this.Destroyed = false;
             this.Lives = 3;
+            this.Powerups = new List<Powerup>();
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
@@ -64,9 +66,10 @@ namespace Asteroids
 
         public void Update(Vector3 direction, CollisionEngine collisionEngine, 
             SoundEngine soundEngine, ParticleEngine particleEngine,List<Asteroid> asteroids, 
-            MouseState originalMouseState, GameTime gameTime, GraphicsDevice device)
+            List<Powerup> powerups, MouseState originalMouseState, GameTime gameTime, 
+            GraphicsDevice device)
         {
-            CheckCollisions(collisionEngine, soundEngine, asteroids);
+            CheckCollisions(collisionEngine, soundEngine, powerups, asteroids);
 
             if (this.Destroyed)
             {
@@ -215,8 +218,8 @@ namespace Asteroids
             }
         }
 
-        private void CheckCollisions(CollisionEngine collisionEngine, 
-            SoundEngine soundEngine, List<Asteroid> asteroids)
+        private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine, 
+            List<Powerup> powerups, List<Asteroid> asteroids)
         {
             // Check if the ship hits the edge of the universe
             if (collisionEngine.CollidesWithEdge(this.Position, this.BoundingSphere))
@@ -242,13 +245,27 @@ namespace Asteroids
             // The ship is destroyed if it hits an asteroid
             foreach (Asteroid asteroid in asteroids)
             {
-                if (collisionEngine.CollideTwoObjects(soundEngine, this.BoundingSphere, 
+                if (collisionEngine.CollideTwoObjects(this.BoundingSphere, 
                     asteroid.BoundingSphere))
                 {
                     this.Destroyed = true;
                     if (soundEngine.Explosion.State != SoundState.Playing)
                         soundEngine.Explosion.Play();
                     LoseLife();
+                }
+            }
+
+            // The ship gets a powerup if it runs over it
+            foreach (Powerup powerup in powerups)
+            {
+                if (collisionEngine.CollideTwoObjects(this.BoundingSphere, powerup.BoundingSphere))
+                {
+                    this.Powerups.Add(powerup);
+                    powerup.Collected = true;
+                    // The powerup is activated if it is a shield
+                    if (powerup.Type == Powerup.PowerupType.Shield)
+                        powerup.Activated = true;
+                    break;
                 }
             }
         }
