@@ -108,6 +108,8 @@ namespace Asteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+                Draw(gameTime);
             int totalTime = (int) gameTime.TotalGameTime.TotalSeconds;
             gameClock = totalTime.ToString();
 
