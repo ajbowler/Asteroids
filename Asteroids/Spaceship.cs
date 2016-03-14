@@ -269,10 +269,12 @@ namespace Asteroids
                         this.Shield = null;
                     }
                     else
+                    {
                         this.Destroyed = true;
+                        LoseLife();
+                    }
                     if (soundEngine.Explosion.State != SoundState.Playing)
                         soundEngine.Explosion.Play();
-                    LoseLife();
                 }
             }
 
