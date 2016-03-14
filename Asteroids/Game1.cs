@@ -27,6 +27,8 @@ namespace Asteroids
         List<Powerup> powerups;
         Texture2D lifeTexture;
         Texture2D explosionParticleTexture;
+        Texture2D shieldSprite;
+        Texture2D shrinkSprite;
         SpriteFont timeFont;
         string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
@@ -83,6 +85,8 @@ namespace Asteroids
             camera = new Camera(device);
             lifeTexture = this.Content.Load<Texture2D>("Sprites/spaceship_sprite");
             explosionParticleTexture = this.Content.Load<Texture2D>("Sprites/explosion_particle");
+            shieldSprite = this.Content.Load<Texture2D>("Sprites/power_up_shield");
+            shrinkSprite = this.Content.Load<Texture2D>("Sprites/power_up_shrink");
             timeFont = Content.Load<SpriteFont>("Fonts/Courier New");
             collisionEngine = new CollisionEngine();
             particleEngine = new ParticleEngine(explosionParticleTexture, billboardEffect, device);
@@ -176,6 +180,7 @@ namespace Asteroids
             {
                 spaceship.Draw(this.Content, camera.View, camera.Projection);
                 DrawLives(spaceship.Lives);
+                DrawPowerupSprites();
             }
             DrawTime(gameClock);
             base.Draw(gameTime);
@@ -313,6 +318,21 @@ namespace Asteroids
             spriteBatch.Begin();
             Vector2 position = new Vector2(device.Viewport.Width - timeFont.MeasureString(time).X, 0);
             spriteBatch.DrawString(timeFont, time, position, Color.Gold);
+            spriteBatch.End();
+        }
+
+        private void DrawPowerupSprites()
+        {
+            int textureWidth = shieldSprite.Width;
+            int textureHeight = shieldSprite.Height;
+
+            Rectangle shieldRect = new Rectangle(0, lifeTexture.Height,
+                textureWidth, textureHeight);
+            Rectangle shrinkRect = new Rectangle(shieldRect.Width, lifeTexture.Height, 
+                textureWidth, textureHeight);
+            spriteBatch.Begin();
+            spriteBatch.Draw(shieldSprite, shieldRect, Color.White);
+            spriteBatch.Draw(shrinkSprite, shrinkRect, Color.White);
             spriteBatch.End();
         }
 
