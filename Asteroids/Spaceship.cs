@@ -28,7 +28,8 @@ namespace Asteroids
         public BoundingSphere BoundingSphere { get; set; }
         public bool Destroyed { get; set; }
         public int Lives { get; set; }
-        public List<Powerup> Powerups { get; set; }
+        public Powerup Shield { get; set; }
+        public Powerup Shrink { get; set; }
 
         public Spaceship()
         {
@@ -42,7 +43,8 @@ namespace Asteroids
             this.BoundingSphere = new BoundingSphere();
             this.Destroyed = false;
             this.Lives = 3;
-            this.Powerups = new List<Powerup>();
+            this.Shield = null;
+            this.Shrink = null;
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
@@ -260,7 +262,10 @@ namespace Asteroids
             {
                 if (collisionEngine.CollideTwoObjects(this.BoundingSphere, powerup.BoundingSphere))
                 {
-                    this.Powerups.Add(powerup);
+                    if (powerup.Type == Powerup.PowerupType.Shield && this.Shield == null)
+                        this.Shield = powerup;
+                    if (powerup.Type == Powerup.PowerupType.Shrink && this.Shrink == null)
+                        this.Shrink = powerup;
                     powerup.Collected = true;
                     // The powerup is activated if it is a shield
                     if (powerup.Type == Powerup.PowerupType.Shield)

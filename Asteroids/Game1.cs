@@ -32,7 +32,7 @@ namespace Asteroids
         SpriteFont timeFont;
         string gameClock;
         public const int TORPEDO_FIRE_INTERVAL = 2;
-        public const int ASTEROID_COUNT = 50;
+        public const int ASTEROID_COUNT = 20;
         public const int POWERUP_SPAWN_INTERVAL = 25;
         public const float AST_ROT_SPEED_LIMIT = 0.05f;
         public const float AST_ROT_MIN_MAGNITUDE = 0f;
@@ -120,7 +120,7 @@ namespace Asteroids
             powerupTimer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
             if (powerupTimer <= 0)
             {
-                AddPowerup(rng);
+                SpawnPowerup(rng);
                 powerupTimer = POWERUP_SPAWN_INTERVAL;
             }
 
@@ -336,21 +336,44 @@ namespace Asteroids
                 textureWidth, textureHeight);
             Rectangle shrinkRect = new Rectangle(shieldRect.Width, lifeTexture.Height, 
                 textureWidth, textureHeight);
+
             spriteBatch.Begin();
-            spriteBatch.Draw(shieldSprite, shieldRect, Color.White);
-            spriteBatch.Draw(shrinkSprite, shrinkRect, Color.White);
+            if (spaceship.Shield != null)
+                spriteBatch.Draw(shieldSprite, shieldRect, Color.White);
+            if (spaceship.Shrink != null)
+            {
+                if (!spaceship.Shrink.Activated)
+                    spriteBatch.Draw(shrinkSprite, shrinkRect, Color.White);
+            }
             spriteBatch.End();
         }
 
-        private void AddPowerup(Random rng)
+        /**
+         * Spawns a random powerup if the spaceship doesn't have any, 
+         * otherwise it spawns the powerup the ship doesn't have. If 
+         * the ship has both powerups, nothing spawns.
+         */
+        private void SpawnPowerup(Random rng)
         {
             int type = rng.Next();
             Vector3 position = GenerateRandomPosition();
             Powerup powerup;
-            if (type % 2 == 0)
-                powerup = new Powerup(Powerup.PowerupType.Shield, position);
+            if (spaceship.Shield != null && spaceship.Shrink != null)
+                return;
+            else if (spaceship.Shield == null && spaceship.Shrink == null)
+            {
+                if (type % 2 == 0)
+                    powerup = new Powerup(Powerup.PowerupType.Shield, position);
+                else
+                    powerup = new Powerup(Powerup.PowerupType.Shrink, position);
+            }
             else
-                powerup = new Powerup(Powerup.PowerupType.Shrink, position);
+            {
+                if (spaceship.Shield == null)
+                    powerup = new Powerup(Powerup.PowerupType.Shield, position);
+                else
+                    powerup = new Powerup(Powerup.PowerupType.Shrink, position);
+            }
             powerup.LoadModel(this.Content, effect);
             powerups.Add(powerup);
         }
