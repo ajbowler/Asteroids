@@ -91,6 +91,9 @@ namespace Asteroids
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
             powerups = new List<Powerup>();
+            Powerup powerup = new Powerup(Powerup.PowerupType.Shield, new Vector3(0, 0, 50));
+            powerup.LoadModel(this.Content, effect);
+            powerups.Add(powerup);
             LoadAsteroids();
         }
 
@@ -159,6 +162,8 @@ namespace Asteroids
                 torp.Draw(this.Content, camera.View, camera.Projection);
             foreach (Asteroid asteroid in asteroids)
                 asteroid.Draw(this.Content, camera.View, camera.Projection);
+            foreach (Powerup powerup in powerups)
+                powerup.Draw(camera.View, camera.Projection);
             if (spaceship != null)
             {
                 spaceship.Draw(this.Content, camera.View, camera.Projection);
