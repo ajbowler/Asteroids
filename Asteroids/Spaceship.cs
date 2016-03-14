@@ -30,6 +30,7 @@ namespace Asteroids
         public int Lives { get; set; }
         public Powerup Shield { get; set; }
         public Powerup Shrink { get; set; }
+        public bool ShrinkUsed { get; set; }
 
         public Spaceship()
         {
@@ -45,6 +46,7 @@ namespace Asteroids
             this.Lives = 3;
             this.Shield = null;
             this.Shrink = null;
+            this.ShrinkUsed = false;
         }
 
         public void LoadModelAndTexture(ContentManager content, BasicEffect effect)
@@ -71,12 +73,22 @@ namespace Asteroids
             List<Powerup> powerups, MouseState originalMouseState, GameTime gameTime, 
             GraphicsDevice device)
         {
-            if (this.Shrink !=  null)
+            if (this.Shrink != null)
             {
                 if (this.Shrink.Activated)
                 {
-                    this.BoundingSphere = new BoundingSphere(
-                        this.Position, this.BoundingSphere.Radius * 0.25f);
+                    this.Shrink.Update(gameTime);
+                    if (this.Shrink.Timer <= 0)
+                    {
+                        this.Shrink = null;
+                        this.BoundingSphere = new BoundingSphere(
+                            this.Position, this.BoundingSphere.Radius / 0.25f);
+                    }
+                    else
+                    {
+                        this.BoundingSphere = new BoundingSphere(
+                            this.Position, this.BoundingSphere.Radius * 0.25f);
+                    }
                 }
             }
             CheckCollisions(collisionEngine, soundEngine, powerups, asteroids);
@@ -107,6 +119,8 @@ namespace Asteroids
                 Matrix.CreateRotationZ(MathHelper.Pi) *
                 Matrix.CreateFromQuaternion(this.Rotation) *
                 Matrix.CreateTranslation(this.Position);
+
+            this.ShrinkUsed = false;
 
             Matrix[] transformation = new Matrix[this.Model.Bones.Count];
             this.Model.CopyAbsoluteBoneTransformsTo(transformation);
@@ -149,7 +163,10 @@ namespace Asteroids
                 }
 
                 if (keys.IsKeyDown(Keys.Q))
+                {
                     this.Shrink.Activated = true;
+                    this.ShrinkUsed = true;
+                }
             }
             else
             {
@@ -318,6 +335,8 @@ namespace Asteroids
                 else
                     return Matrix.Identity;
             }
+            else if (this.ShrinkUsed)
+                return Matrix.CreateScale(4f);
             else
                 return Matrix.Identity;
         }

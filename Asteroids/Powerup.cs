@@ -24,6 +24,7 @@ namespace Asteroids
 
         public PowerupType Type { get; set; }
         public Vector3 Position { get; set; }
+        public float Timer { get; set; }
         public bool Activated { get; set; }
         public bool Collected { get; set; }
         public Model Model { get; set; }
@@ -38,6 +39,7 @@ namespace Asteroids
             this.Model = null;
             this.Activated = false;
             this.Collected = false;
+            this.Timer = 10;
             this.BoundingSphere = new BoundingSphere();
             this.World = Matrix.Identity;
         }
@@ -67,6 +69,16 @@ namespace Asteroids
                     meshPart.Effect = effect.Clone();
             }
             this.BoundingSphere = new BoundingSphere(this.Position, radius * 300f);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if (this.Type == PowerupType.Shrink && this.Activated)
+            {
+                this.Timer -= (float) gameTime.ElapsedGameTime.TotalSeconds;
+                if (this.Timer <= 0)
+                    this.Activated = false;
+            }
         }
 
         public void Draw(Matrix view, Matrix projection)
