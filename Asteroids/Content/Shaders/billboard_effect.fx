@@ -1,6 +1,9 @@
 float4x4 View;
 float4x4 Projection;
 
+bool AlphaTest = true;
+float AlphaTestValue = 0.5f;
+
 texture ParticleTexture;
 sampler2D texSampler = sampler_state {
   texture = <ParticleTexture>;
@@ -35,6 +38,10 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input) {
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0 {
   float4 color = tex2D(texSampler, input.UV);
+
+  if (AlphaTest)
+    clip((color.a - AlphaTestValue) * (AlphaTestGreater ? 1 : -1));
+
   return color;
 }
 

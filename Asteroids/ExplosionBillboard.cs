@@ -55,6 +55,8 @@ namespace Asteroids
             this.Effect.Parameters["Size"].SetValue(this.Size);
             this.Effect.Parameters["Up"].SetValue(camera.GetUp());
             this.Effect.Parameters["Side"].SetValue(camera.GetRight());
+            this.Effect.Parameters["AlphaTest"].SetValue(true);
+            this.Effect.Parameters["AlphaTestGreater"].SetValue(true);
             this.Effect.CurrentTechnique.Passes[0].Apply();
 
             this.Device.BlendState = BlendState.AlphaBlend;
