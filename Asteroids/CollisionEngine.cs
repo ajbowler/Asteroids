@@ -17,12 +17,7 @@ namespace Asteroids
 
         public bool CollideTwoObjects(SoundEngine soundEngine, BoundingSphere bs1, BoundingSphere bs2)
         {
-            if (bs1.Intersects(bs2))
-            {
-                return true;
-            }
-            else
-                return false;
+            return bs1.Intersects(bs2);
         }
 
         public bool CollidesWithEdge(Vector3 position, BoundingSphere boundingSphere)
