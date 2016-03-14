@@ -35,5 +35,5 @@ Powerups occasionally spawn in random positions of the world.
 - Run it in Visual Studio
 
 ## Known Unresolved Issues
-- Occasionally when two asteroids collide the game hangs and nothing is drawn. I have not been able to figure out why this happens.
+- Occasionally when two asteroids collide the game hangs and nothing is drawn. I have not been able to figure out why this happens. Press "R" to fix this. Not pretty, but it works.
 - Occasionally when exiting the game a NullReferenceException is thrown.
