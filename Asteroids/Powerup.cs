@@ -66,7 +66,7 @@ namespace Asteroids
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                     meshPart.Effect = effect.Clone();
             }
-            this.BoundingSphere = new BoundingSphere(this.Position, radius * 500f);
+            this.BoundingSphere = new BoundingSphere(this.Position, radius * 300f);
         }
 
         public void Draw(Matrix view, Matrix projection)
@@ -74,7 +74,7 @@ namespace Asteroids
             if (this.Collected)
                 return;
 
-            this.World = Matrix.CreateScale(500f) * Matrix.CreateTranslation(this.Position);
+            this.World = Matrix.CreateScale(300f) * Matrix.CreateTranslation(this.Position);
             Matrix[] transformation = new Matrix[this.Model.Bones.Count];
             this.Model.CopyAbsoluteBoneTransformsTo(transformation);
             foreach (ModelMesh mesh in this.Model.Meshes)
