@@ -14,9 +14,10 @@ namespace Asteroids
         public GraphicsDevice Device { get; set; }
         public Texture2D Texture { get; set; }
         public Effect Effect { get; set; }
-        public int Lifetime { get; set; }
+        public float BirthTime { get; set; }
+        public float LifeTime { get; set; }
+        public bool Dead { get; set; }
         public Vector2 Size { get; set; }
-        public Color Color { get; set; }
         public Matrix World { get; set; }
         public Vector3 Position { get; set; }
         public VertexBuffer VertexBuffer { get; set; }
@@ -25,12 +26,14 @@ namespace Asteroids
         private int[] Indices;
 
         public ExplosionBillboard(GraphicsDevice device, Texture2D texture, Effect effect, 
-            int lifetime, Vector2 size, Vector3 position)
+            GameTime gameTime, Vector2 size, Vector3 position)
         {
             this.Device = device;
             this.Texture = texture;
             this.Effect = effect;
-            this.Lifetime = lifetime;
+            this.BirthTime = (float) gameTime.TotalGameTime.TotalMilliseconds;
+            this.LifeTime = 5000f; // 5 seconds
+            this.Dead = false;
             this.Size = size;
             this.Position = position;
             this.World = Matrix.Identity;
@@ -55,13 +58,13 @@ namespace Asteroids
             this.Effect.Parameters["Size"].SetValue(this.Size);
             this.Effect.Parameters["Up"].SetValue(camera.GetUp());
             this.Effect.Parameters["Side"].SetValue(camera.GetRight());
-            this.Effect.Parameters["AlphaTest"].SetValue(true);
-            this.Effect.Parameters["AlphaTestGreater"].SetValue(true);
             this.Effect.CurrentTechnique.Passes[0].Apply();
 
             this.Device.BlendState = BlendState.AlphaBlend;
+            this.Device.DepthStencilState = DepthStencilState.DepthRead;
             this.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
             this.Device.BlendState = BlendState.Opaque;
+            this.Device.DepthStencilState = DepthStencilState.Default;
             this.Device.SetVertexBuffer(null);
             this.Device.Indices = null;
         }
@@ -86,11 +89,6 @@ namespace Asteroids
             this.IndexBuffer = new IndexBuffer(this.Device, IndexElementSize.ThirtyTwoBits, 
                 6, BufferUsage.WriteOnly);
             this.IndexBuffer.SetData<int>(this.Indices);
-        }
-
-        public void DecreaseLifeTime()
-        {
-            this.Lifetime--;
         }
     }
 }

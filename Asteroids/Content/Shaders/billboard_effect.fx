@@ -1,5 +1,6 @@
 float4x4 View;
 float4x4 Projection;
+bool AlphaTestGreater = true;
 
 bool AlphaTest = true;
 float AlphaTestValue = 0.5f;

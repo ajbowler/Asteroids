@@ -14,6 +14,7 @@ namespace Asteroids
         BasicEffect effect;
         Effect billboardEffect;
         CollisionEngine collisionEngine;
+        ParticleEngine particleEngine;
         SoundEngine soundEngine;
         Random rng = new Random();
 
@@ -22,7 +23,6 @@ namespace Asteroids
         Skybox skybox;
         Spaceship spaceship;
         List<Torpedo> torpedoes;
-        List<ExplosionBillboard> explosionBillboards;
         List<Asteroid> asteroids;
         Texture2D lifeTexture;
         Texture2D explosionParticleTexture;
@@ -82,15 +82,13 @@ namespace Asteroids
             explosionParticleTexture = this.Content.Load<Texture2D>("Sprites/explosion_particle");
             timeFont = Content.Load<SpriteFont>("Fonts/Courier New");
             collisionEngine = new CollisionEngine();
+            particleEngine = new ParticleEngine(explosionParticleTexture, billboardEffect, device);
             soundEngine = new SoundEngine(this.Content);
             skybox = new Skybox();
             skybox.LoadModel(this.Content, effect);
             spaceship = new Spaceship();
             spaceship.LoadModelAndTexture(this.Content, effect);
             torpedoes = new List<Torpedo>();
-            explosionBillboards = new List<ExplosionBillboard>();
-            explosionBillboards.Add(new ExplosionBillboard(device, explosionParticleTexture, 
-                billboardEffect, 0, new Vector2(800), new Vector3(0, 0, 5000)));
             LoadAsteroids();
         }
 
@@ -116,7 +114,7 @@ namespace Asteroids
             if (spaceship != null && spaceship.Lives > 0)
             {
                 spaceship.Update(direction, collisionEngine, soundEngine, 
-                    asteroids, originalMouseState, gameTime, device);
+                    particleEngine, asteroids, originalMouseState, gameTime, device);
                 camera.Update(spaceship);
                 ProcessClick(gameTime);
             }
@@ -150,8 +148,7 @@ namespace Asteroids
             effect.Projection = camera.Projection;
             effect.View = camera.View;
             skybox.Draw(device, camera.View, camera.Projection);
-            foreach (ExplosionBillboard billboard in explosionBillboards)
-                billboard.Draw(camera);
+            particleEngine.Draw(camera);
             foreach (Torpedo torp in torpedoes)
                 torp.Draw(this.Content, camera.View, camera.Projection);
             foreach (Asteroid asteroid in asteroids)
