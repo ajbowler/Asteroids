@@ -432,3 +432,21 @@
 /processorParam:TextureFormat=Color
 /build:Models/shrink_texture.png
 
+#begin Sounds/grow.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/grow.wav
+
+#begin Sounds/shield.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/shield.wav
+
+#begin Sounds/shrink.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/shrink.wav
+
