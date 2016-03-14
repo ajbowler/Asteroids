@@ -111,6 +111,9 @@ namespace Asteroids
             if (timer < 0)
                 timer = 0;
             Vector3 direction = camera.GetDirection();
+
+            particleEngine.Update(gameTime);
+
             if (spaceship != null && spaceship.Lives > 0)
             {
                 spaceship.Update(direction, collisionEngine, soundEngine, 

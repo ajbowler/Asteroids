@@ -32,6 +32,16 @@ namespace Asteroids
                 );
         }
 
+        public void Update(GameTime gameTime)
+        {
+            for (int i = 0; i < this.Particles.Count; i++)
+            {
+                this.Particles[i].Update(gameTime);
+                if (this.Particles[i].Dead)
+                    this.Particles.RemoveAt(i);
+            }
+        }
+
         public void Draw(Camera camera)
         {
             foreach (ExplosionBillboard billboard in this.Particles)

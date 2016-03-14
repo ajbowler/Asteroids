@@ -18,7 +18,6 @@ namespace Asteroids
         public float LifeTime { get; set; }
         public bool Dead { get; set; }
         public Vector2 Size { get; set; }
-        public Matrix World { get; set; }
         public Vector3 Position { get; set; }
         public VertexBuffer VertexBuffer { get; set; }
         public IndexBuffer IndexBuffer { get; set; }
@@ -32,11 +31,10 @@ namespace Asteroids
             this.Texture = texture;
             this.Effect = effect;
             this.BirthTime = (float) gameTime.TotalGameTime.TotalMilliseconds;
-            this.LifeTime = 5000f; // 5 seconds
+            this.LifeTime = 3000f; // 3 seconds
             this.Dead = false;
             this.Size = size;
             this.Position = position;
-            this.World = Matrix.Identity;
             this.Particle = new VertexPositionTexture[4];
             this.Indices = new int[6];
             MakeParticle();
@@ -44,11 +42,18 @@ namespace Asteroids
 
         public void Update(GameTime gameTime)
         {
-            // TODO
+            float totalTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            if (totalTime - this.BirthTime > this.LifeTime)
+            {
+                this.Dead = true;
+            }
         }
 
         public void Draw(Camera camera)
         {
+            if (this.Dead)
+                return;
+
             this.Device.SetVertexBuffer(this.VertexBuffer);
             this.Device.Indices = this.IndexBuffer;
 
