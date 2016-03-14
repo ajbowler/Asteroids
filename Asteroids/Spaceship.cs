@@ -71,6 +71,14 @@ namespace Asteroids
             List<Powerup> powerups, MouseState originalMouseState, GameTime gameTime, 
             GraphicsDevice device)
         {
+            if (this.Shrink !=  null)
+            {
+                if (this.Shrink.Activated)
+                {
+                    this.BoundingSphere = new BoundingSphere(
+                        this.Position, this.BoundingSphere.Radius * 0.25f);
+                }
+            }
             CheckCollisions(collisionEngine, soundEngine, powerups, asteroids);
 
             if (this.Destroyed)
@@ -94,7 +102,8 @@ namespace Asteroids
 
         public void Draw(ContentManager content, Matrix view, Matrix projection)
         {
-            this.World = Matrix.CreateRotationX(MathHelper.Pi / 2) *
+            this.World = DoShrink() * 
+                Matrix.CreateRotationX(MathHelper.Pi / 2) *
                 Matrix.CreateRotationZ(MathHelper.Pi) *
                 Matrix.CreateFromQuaternion(this.Rotation) *
                 Matrix.CreateTranslation(this.Position);
@@ -138,6 +147,9 @@ namespace Asteroids
                     Roll(gameTime, "left");
                     soundEngine.ShipEngine.Play();
                 }
+
+                if (keys.IsKeyDown(Keys.Q))
+                    this.Shrink.Activated = true;
             }
             else
             {
@@ -293,6 +305,19 @@ namespace Asteroids
         {
             this.Position = position;
             this.BoundingSphere = new BoundingSphere(position, this.BoundingSphere.Radius);
+        }
+
+        private Matrix DoShrink()
+        {
+            if (this.Shrink != null)
+            {
+                if (this.Shrink.Activated)
+                    return Matrix.CreateScale(0.25f);
+                else
+                    return Matrix.Identity;
+            }
+            else
+                return Matrix.Identity;
         }
     }
 }
