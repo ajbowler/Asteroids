@@ -142,10 +142,8 @@ namespace Asteroids
                 spaceship = null;
 
             for (int i = 0; i < powerups.Count; i++)
-            {
                 if (powerups[i].Collected)
                     powerups.RemoveAt(i);
-            }
 
             for (int i = 0; i < torpedoes.Count; i++)
             {
@@ -160,7 +158,7 @@ namespace Asteroids
             {
                 if (!(asteroids[i].Destroyed))
                     asteroids[i].Update(collisionEngine, soundEngine, gameTime, torpedoes, 
-                        asteroids, rng, asteroidModels, asteroidBSRadius);
+                        asteroids, asteroidModels, asteroidBSRadius);
                 else
                     asteroids.RemoveAt(i);
             }
@@ -174,17 +172,17 @@ namespace Asteroids
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             effect.Projection = camera.Projection;
             effect.View = camera.View;
-            skybox.Draw(device, camera.View, camera.Projection);
+            skybox.Draw(camera.View, camera.Projection);
             particleEngine.Draw(camera);
             foreach (Torpedo torp in torpedoes)
-                torp.Draw(this.Content, camera.View, camera.Projection);
+                torp.Draw(camera.View, camera.Projection);
             foreach (Asteroid asteroid in asteroids)
                 asteroid.Draw(this.Content, camera.View, camera.Projection);
             foreach (Powerup powerup in powerups)
                 powerup.Draw(camera.View, camera.Projection);
             if (spaceship != null)
             {
-                spaceship.Draw(this.Content, camera.View, camera.Projection);
+                spaceship.Draw(camera.View, camera.Projection);
                 DrawLives(spaceship.Lives);
                 DrawPowerupSprites();
             }
@@ -209,9 +207,7 @@ namespace Asteroids
         {
             MouseState mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
-            {
                 FireTorpedo();
-            }
         }
 
         private void LoadAsteroids()

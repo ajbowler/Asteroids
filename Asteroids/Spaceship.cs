@@ -113,7 +113,7 @@ namespace Asteroids
             ProcessMouse(originalMouseState, gameTime, device);
         }
 
-        public void Draw(ContentManager content, Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection)
         {
             this.World = DoShrink() * 
                 Matrix.CreateRotationX(MathHelper.Pi / 2) *
@@ -317,7 +317,6 @@ namespace Asteroids
                         powerup.Activated = true;
                         soundEngine.Shield.Play();
                     }
-
                     break;
                 }
             }

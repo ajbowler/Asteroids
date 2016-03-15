@@ -61,7 +61,7 @@ namespace Asteroids
             UpdatePosition(newPos);
         }
 
-        public void Draw(ContentManager content, Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection)
         {
             if (this.Destroyed)
                 return;

@@ -43,10 +43,10 @@ namespace Asteroids
         }
 
         public void Update(CollisionEngine collisionEngine, SoundEngine soundEngine, 
-            GameTime gameTime, List<Torpedo> torpedoes, List<Asteroid> asteroids, 
-            Random rng, Model[] models, float[] sphereRadius)
+            GameTime gameTime, List<Torpedo> torpedoes, List<Asteroid> asteroids, Model[] models, 
+            float[] sphereRadius)
         {
-            CheckCollisions(collisionEngine, soundEngine, torpedoes, asteroids, rng, models, sphereRadius);
+            CheckCollisions(collisionEngine, soundEngine, torpedoes, asteroids, models, sphereRadius);
 
             float yprRate = this.RotationSpeed / gameTime.ElapsedGameTime.Milliseconds;
             Vector3 ypr = UpdateYPR(yprRate);
@@ -85,7 +85,7 @@ namespace Asteroids
         }
 
         private void CheckCollisions(CollisionEngine collisionEngine, SoundEngine soundEngine, 
-            List<Torpedo> torpedoes, List<Asteroid> asteroids, Random rng, Model[] models, 
+            List<Torpedo> torpedoes, List<Asteroid> asteroids, Model[] models, 
             float[] sphereRadius)
         {
             // The asteroid bounces off if it collides with the edge of the universe.
@@ -111,7 +111,7 @@ namespace Asteroids
                 {
                     torpedo.Destroyed = true;
                     soundEngine.Explosion.Play();
-                    DecreaseSize(rng, models, sphereRadius);
+                    DecreaseSize(models, sphereRadius);
                     break;
                 }
             }
@@ -126,7 +126,7 @@ namespace Asteroids
                     {
                         if (soundEngine.Explosion.State != SoundState.Playing)
                             soundEngine.Explosion.Play();
-                        DecreaseSize(rng, models, sphereRadius);
+                        DecreaseSize(models, sphereRadius);
                         Vector3 exitVector = CalculateExitVector(asteroid);
                         this.Direction = exitVector;
                         break;
@@ -135,7 +135,7 @@ namespace Asteroids
             }
         }
 
-        private void DecreaseSize(Random rng, Model[] models, float[] sphereRadius)
+        private void DecreaseSize(Model[] models, float[] sphereRadius)
         {
             int newSize = this.Size;
 

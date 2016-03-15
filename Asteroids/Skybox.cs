@@ -1,11 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Asteroids
 {
@@ -29,19 +24,15 @@ namespace Asteroids
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (BasicEffect currentEffect in mesh.Effects)
-                {
                     this.textures[i++] = currentEffect.Texture;
-                }
 
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
                     meshPart.Effect = effect.Clone();
-                }
             }
             this.model = model;
         }
 
-        public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection)
         {
             Matrix[] transformation = new Matrix[this.model.Bones.Count];
             this.model.CopyAbsoluteBoneTransformsTo(transformation);

@@ -38,9 +38,7 @@ namespace Asteroids
         {
             float totalTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             if (totalTime - this.BirthTime > this.LifeTime)
-            {
                 this.Dead = true;
-            }
         }
 
         public void Draw(Camera camera)
