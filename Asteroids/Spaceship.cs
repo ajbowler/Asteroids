@@ -83,6 +83,7 @@ namespace Asteroids
                         this.Shrink = null;
                         this.BoundingSphere = new BoundingSphere(
                             this.Position, this.BoundingSphere.Radius / 0.25f);
+                        soundEngine.Grow.Play();
                     }
                     else
                     {
@@ -164,8 +165,13 @@ namespace Asteroids
 
                 if (keys.IsKeyDown(Keys.Q))
                 {
-                    this.Shrink.Activated = true;
-                    this.ShrinkUsed = true;
+                    if (this.Shrink != null)
+                    {
+                        this.Shrink.Activated = true;
+                        this.ShrinkUsed = true;
+                        soundEngine.Shrink.Play();
+                    }
+
                 }
             }
             else
@@ -307,7 +313,11 @@ namespace Asteroids
                     powerup.Collected = true;
                     // The powerup is activated if it is a shield
                     if (powerup.Type == Powerup.PowerupType.Shield)
+                    {
                         powerup.Activated = true;
+                        soundEngine.Shield.Play();
+                    }
+
                     break;
                 }
             }
